@@ -1,16 +1,18 @@
 activity_day = ""
+activity_content = ""
 players = []
 
 
-def set_activity_day(string):
-    global activity_day
+def set_activity(day, content):
+    global activity_day, activity_content
     global players
-    activity_day = string
+    activity_day = day
+    activity_content = content
     players = []
     return True
 
 
-def check_activity_stats():
+def get_activity_stats():
     global activity_day
     global players
     if activity_day == "":

@@ -21,7 +21,7 @@ def draw_text(img_pil, text, offset_x):
     draw.text((x + offset_x, 360), text, font=font, fill=(255, 255, 255, 255))
 
 
-def text_to_image(text):
+def text_to_image(text) -> Image:
     font = ImageFont.truetype(fontpath, 24)
     padding = 10
     margin = 4
@@ -40,7 +40,7 @@ def text_to_image(text):
     return i
 
 
-def image_to_base64(img, _format='PNG'):
+def image_to_base64(img, _format='PNG') -> bytes:
     output_buffer = BytesIO()
     img.save(output_buffer, _format)
     byte_data = output_buffer.getvalue()

@@ -9,42 +9,51 @@ _help = on_command("help", aliases={"帮助"}, priority=1, block=True)
 
 
 @_help.handle()
-async def _(bot: Bot, event: Event):
-    await _help.send(f"目前功能:\n/全部式神 or /所有式神：查看所有式神的名称"
-                     f"\n/式神 xx：查看指定式神的卡牌（例如：/式神 不知火）"
-                     f"\n/比赛日期 xx：设置比赛时间（注意每次设置会重置比赛信息）"
-                     f"\n/参加比赛 xx or /报名比赛 xx or /报名参赛 xx：报名参加比赛"
-                     f"\n/查看比赛：获取比赛信息")
-
-
-set_activity_day = on_command("比赛日期", priority=3, block=True)
-
-
-@set_activity_day.handle()
-async def _(bot: Bot, event: Event):
+async def _(event: Event):
     args = str(event.get_message()).split(" ")
     if len(args) > 1:
-        activity.set_activity_day(args[1])
-        await set_activity_day.send(f"比赛日期已经设定为{args[1]}（注意修改比赛日期会重置报名信息）")
+        if args[1] == "录入":
+            await _help.send(f"录入功能（必须私聊才可以使用）："
+                             f"\n/已有式神：查看已录入式神"
+                             f"\n/查看式神 xx：查看指定式神信息"
+                             f"\n/添加式神"
+                             f"\n/修改式神"
+                             f"\n/添加卡牌"
+                             f"\n/修改卡牌")
     else:
-        await set_activity_day.send("比赛日期呢？")
+        await _help.send(f"目前功能:"
+                         f"\n/全部式神 or /所有式神：查看所有式神的名称"
+                         f"\n/式神 xx：查看指定式神的卡牌（例如：/式神 不知火）"
+                         f"\n/创建活动 日期 活动内容：创建新活动（例如：/创建活动 2月19日 群内周赛，注意每次设置会重置活动信息）"
+                         f"\n/参加活动 or /报名活动"
+                         f"\n/退出活动"
+                         f"\n/查看活动：查看活动信息和报名成员")
 
 
-sign_up = on_command("参加比赛", aliases={"报名比赛，报名参赛"}, priority=3, block=True)
+set_activity = on_command("创建活动", priority=3, block=True)
+
+
+@set_activity.handle()
+async def _(bot: Bot, event: Event):
+    args = str(event.get_message()).split(" ")
+    if len(args) > 2:
+        activity.set_activity(args[1], args[2])
+        await set_activity.send(f"新活动已创建，活动日期为{args[1]}，活动内容为{args[2]}")
+    else:
+        await set_activity.send("活动信息不完整，无法创建")
+
+
+sign_up = on_command("参加活动", aliases={"报名活动"}, priority=3, block=True)
 
 
 @sign_up.handle()
 async def _(bot: Bot, event: Event):
-    args = str(event.get_message()).split(" ")
-    if len(args) > 1:
-        await sign_up.send(activity.sign_up(args[1]))
-    else:
-        await sign_up.send("虚空参赛是吧？")
+    await sign_up.send(activity.sign_up())
 
 
-check_activity_stats = on_command("查看比赛", priority=3, block=True)
+get_activity_stats = on_command("查看活动", priority=3, block=True)
 
 
-@check_activity_stats.handle()
+@get_activity_stats.handle()
 async def _(bot: Bot, event: Event):
-    await check_activity_stats.send(activity.check_activity_stats())
+    await get_activity_stats.send(activity.get_activity_stats())
