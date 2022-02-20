@@ -54,7 +54,10 @@ async def _(event: Event):
     if len(args) > 1:
         if game_data.role_exist(args[1]):
             role_data: dict = game_data.get_role(args[1])
-            await check_role.send(f"式神信息如下：\n{utils.trans_role_to_str(role_data)}")
+            await check_role.send(
+                f"式神信息如下：\n{utils.trans_role_to_str(role=role_data)}"
+                f"\n\n卡牌信息如下："
+                f"\n{utils.trans_cards_to_str(cards=role_data['cards'])}")
         else:
             await check_role.send("式神不存在")
     else:
@@ -105,7 +108,6 @@ async def _(state: T_State):
 @modify_role.got("option", prompt="请问要修改哪一项（名字/性别/关键词/派系/系列/力量/血量/描述）")
 @modify_role.got("new_data", prompt="请输入修改内容")
 async def _(state: T_State):
-    logger.info(str(state['name']))
     options = dict(名字="name",
                    性别="sex",
                    关键词="keywords",
@@ -121,10 +123,10 @@ async def _(state: T_State):
     role: dict = {}
     if status:
         if options[str(state['option'])] == "name":
-            role = game_data.get_role(state["new_data"])
+            role = game_data.get_role(str(state["new_data"]))
         else:
-            role = game_data.get_role(state['name'])
-    await modify_role.finish(f"式神修改完成，信息如下：\n{utils.trans_role_to_str(role=role)}")
+            role = game_data.get_role(str(state['name']))
+    await modify_role.finish(f"式神修改完成，信息如下：\n{utils.trans_role_to_str(role)}")
 
 
 add_card = on_command("添加卡牌", rule=to_me(), permission=SUPERUSER, priority=1, block=True)
@@ -152,18 +154,19 @@ async def _(state: T_State):
 @add_card.got("description", prompt="请输入卡牌的卡面描述")
 async def _(state: T_State):
     card = dict(name=str(state["card_name"]),
-                magatama=str(state["card_magatama"]),
-                rarity=str(state["card_rarity"]),
-                type=str(state["card_type"]),
-                attack=str(state["card_strength"]),
-                armor=str(state["card_armor"]),
-                description=str(state["card_description"]))
-    status = game_data.add_card(str(state["role_name"]), card_data=card)
+                magatama=str(state["magatama"]),
+                rarity=str(state["rarity"]),
+                type=str(state["type"]),
+                strength=str(state["strength"]),
+                hp=str(state["hp"]),
+                armor=str(state["armor"]),
+                description=str(state["description"]))
+    status = game_data.add_card(role_name=str(state["role_name"]), card_data=card)
     if status is True:
-        await add_card.send(f"添加成功，卡牌信息如下："
-                            f"\n{utils.trans_card_to_str(card=card)}")
+        await add_card.finish(f"添加成功，卡牌信息如下："
+                              f"\n{utils.trans_card_to_str(card=card)}")
     else:
-        await add_card.send("添加失败，式神名字错误或式神卡牌已满")
+        await add_card.finish("添加失败，式神名字错误或式神卡牌已满")
 
 
 modify_card = on_command("修改卡牌", rule=to_me(), permission=SUPERUSER, priority=1, block=True)
@@ -172,24 +175,28 @@ modify_card = on_command("修改卡牌", rule=to_me(), permission=SUPERUSER, pri
 @modify_card.got("role_name", prompt="请输入式神名字")
 async def _(state: T_State):
     if not game_data.role_exist(str(state['role_name'])):
-        await modify_role.finish(f"式神不存在，请先添加式神")
+        await modify_card.finish(f"式神不存在，请先添加式神")
+    else:
+        cards = game_data.get_role_cards(str(state['role_name']))
+        await modify_card.send(f"式神卡牌信息如下：\n{utils.trans_cards_to_str(cards)}")
 
 
 @modify_card.got("card_name", prompt="请输入卡牌名字")
 async def _(state: T_State):
     role_data = game_data.get_role(str(state['role_name']))
     if not game_data.card_exist(role_data['cards'], str(state['card_name'])):
-        await modify_role.finish(f"卡牌不存在，请先添加卡牌")
+        await modify_card.finish(f"卡牌不存在，请先添加卡牌")
 
 
-@modify_card.got("option", prompt="请问要修改哪一项（名字/勾次/稀有度/类型/力量/护甲/描述）")
-@modify_role.got("new_data", prompt="请输入修改内容")
+@modify_card.got("option", prompt="请问要修改哪一项（名字/勾次/稀有度/类型/力量/血量/护甲/描述）")
+@modify_card.got("new_data", prompt="请输入修改内容")
 async def _(state: T_State):
     options = dict(名字="name",
                    勾次="magatama",
                    稀有度="rarity",
                    类型="type",
-                   力量="attack",
+                   力量="strength",
+                   血量="hp",
                    护甲="armor",
                    描述="description")
     status: bool = game_data.modify_card_data(
@@ -203,4 +210,4 @@ async def _(state: T_State):
             card_data = game_data.get_card(role_name=str(state['role_name']), card_name=str(state["new_data"]))
         else:
             card_data = game_data.get_card(role_name=str(state['role_name']), card_name=str(state['card_name']))
-    await modify_role.finish(f"式神修改完成，信息如下：\n{utils.trans_role_to_str(card_data)}")
+    await modify_card.finish(f"卡牌修改完成，信息如下：\n{utils.trans_card_to_str(card_data)}")

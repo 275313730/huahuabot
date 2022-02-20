@@ -1,16 +1,35 @@
 from os import path
 import json
 
+from typing import List
+
 
 class Role:
-    name: str
-    sex: str
-    keywords: list
-    faction: str
-    series: str
-    strength: int
-    hp: int
-    description: str
+
+    def __init__(self, name: str, sex: str, keywords: str, faction: str, series: str, strength: str, hp: str,
+                 description: str, cards: list):
+        self.name = name
+        self.sex = sex
+        self.keywords = keywords
+        self.faction = faction
+        self.series = series
+        self.strength = strength
+        self.hp = hp
+        self.description = description
+        if cards is not None:
+            self.cards = cards
+        else:
+            self.cards = []
+
+    def trans_to_dict(self):
+        return dict(name=self.name,
+                    sex=self.sex,
+                    keywords=self.keywords,
+                    faction=self.faction,
+                    series=self.series,
+                    strength=self.strength,
+                    hp=self.hp,
+                    description=self.description)
 
 
 def get_current_path() -> str:
@@ -22,6 +41,22 @@ def get_json() -> list:
     with open(get_current_path() + '/game_data.json', 'r') as f:
         game_data = json.load(f)
     return game_data
+
+
+def trans_json_to_roles(roles_json: json) -> List[Role]:
+    roles_list: List[Role] = []
+    for role in roles_json:
+        new_role = Role(name=role['name'],
+                        sex=role['sex'],
+                        keywords=role['keywords'],
+                        faction=role['faction'],
+                        series=role['series'],
+                        strength=role['strength'],
+                        hp=role['hp'],
+                        description=role['description'],
+                        cards=role['cards'])
+        roles_list.append(new_role)
+    return roles_list
 
 
 def write_json(data):
@@ -124,9 +159,9 @@ def add_card(role_name: str, card_data: dict) -> bool:
 def modify_card_data(role_name: str, old_card_name: str, option: str, new_data: str) -> bool:
     data: list = get_json()
     if role_exist(role_name):
-        role = get_role(role_name)
+        role = get_role_data(data, role_name)
         if card_exist(role['cards'], old_card_name):
-            card = get_card(role["cards"], old_card_name)
+            card = get_card_data(role["cards"], old_card_name)
             card[option] = new_data
             write_json(data)
         return True

@@ -1,7 +1,5 @@
-import nonebot
-from nonebot import on_command, logger
-from nonebot.rule import to_me
-from nonebot.adapters.onebot.v11 import Bot, Event, MessageSegment
+from nonebot import on_command
+from nonebot.adapters.onebot.v11 import Event
 
 from . import activity
 
@@ -34,7 +32,7 @@ set_activity = on_command("创建活动", priority=3, block=True)
 
 
 @set_activity.handle()
-async def _(bot: Bot, event: Event):
+async def _(event: Event):
     args = str(event.get_message()).split(" ")
     if len(args) > 2:
         activity.set_activity(args[1], args[2])
@@ -47,7 +45,7 @@ sign_up = on_command("参加活动", aliases={"报名活动"}, priority=3, block
 
 
 @sign_up.handle()
-async def _(bot: Bot, event: Event):
+async def _():
     await sign_up.send(activity.sign_up())
 
 
@@ -55,5 +53,5 @@ get_activity_stats = on_command("查看活动", priority=3, block=True)
 
 
 @get_activity_stats.handle()
-async def _(bot: Bot, event: Event):
+async def _():
     await get_activity_stats.send(activity.get_activity_stats())
