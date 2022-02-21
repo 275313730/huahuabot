@@ -1,8 +1,11 @@
-from os import mkdir, path, walk, listdir
-import requests
-import demjson3
-from lxml import etree
+# coding: UTF-8
+
+from os import mkdir, path, walk
+
 import PIL.Image as Image
+import demjson3
+import requests
+from lxml import etree
 
 
 def get_pic(pic_url, pic_path):
