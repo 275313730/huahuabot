@@ -286,18 +286,31 @@ def get_all_roles_name() -> str:
     return roles_name
 
 
-def get_faction_roles_name(faction: str) -> str:
+def get_selected_roles_name(keyword: str) -> str:
     roles: List[Role] = get_roles()
-    faction_roles: List[Role] = []
+    selected_roles: List[Role] = []
     roles_name = ""
-    for role in roles:
-        if role.faction == faction:
-            faction_roles.append(role)
-    for i in range(len(faction_roles)):
+    keyword_dict = dict(faction=["红莲", "紫岩", "青岚", "苍叶"], sex=["男", "女", "无"],
+                        series=['经典', '不夜之火', '月夜幻响', '沧海刀鸣', '吉运缘结', '四相琉璃', '善恶无明', '繁花入梦', '浮生方醒'])
+    for (k, v) in keyword_dict.items():
+        if keyword in v:
+            if k == "faction":
+                for role in roles:
+                    if role.faction == keyword:
+                        selected_roles.append(role)
+            elif k == "sex":
+                for role in roles:
+                    if role.sex == keyword:
+                        selected_roles.append(role)
+            elif k == "series":
+                for role in roles:
+                    if role.series == keyword:
+                        selected_roles.append(role)
+    for i in range(len(selected_roles)):
         if i < len(roles) - 1:
-            roles_name += f"{faction_roles[i].name}\n"
+            roles_name += f"{selected_roles[i].name}\n"
         else:
-            roles_name += f"{faction_roles[i].name}"
+            roles_name += f"{selected_roles[i].name}"
     return roles_name
 
 

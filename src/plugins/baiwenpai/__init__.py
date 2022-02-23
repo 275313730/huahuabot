@@ -46,7 +46,7 @@ added_roles = on_command("已有式神", priority=1, block=True)
 async def _(event: Event):
     args = str(event.get_message()).split(" ")
     if len(args) > 1:
-        await added_roles.send(game_data.get_faction_roles_name(args[1]))
+        await added_roles.send(game_data.get_selected_roles_name(args[1]))
     else:
         await added_roles.send(game_data.get_all_roles_name())
 
