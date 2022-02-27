@@ -86,10 +86,13 @@ def combine_pics():
                 image_names = list(walk(_path))[0][2]  # 获取目标文件夹下的所有文件的文件名
                 image_names.remove("avatar.png")
                 image_names.remove(f"{role_name}.png")
+                if 'combine.png' in image_names:
+                    image_names.remove('combine.png')
                 # 先用list将iterator转成list，再[0]取出里面的三元元组元素，再[2]取出元组中的由文件夹名组成的列表
                 # 从所有文件中随机抽取需要数量的文件，可设置是否能重复抽取
                 # random库中的choices函数用于可放回抽取，第一个参数指定用于抽取的对象，k参数指定抽取数量
                 # sample函数用于不放回抽取，参数同上
+                print(image_names)
                 return image_names
 
             concat_images(get_image_names(_dir, PATH), NAME, PATH)
