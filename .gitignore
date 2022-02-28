@@ -5,6 +5,9 @@
 # baiwenpai
 pic
 
+# mac
+.DS_Store
+
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -142,3 +145,4 @@ dmypy.json
 .pytype/
 
 # End of https://www.toptal.com/developers/gitignore/api/python
+.DS_Store

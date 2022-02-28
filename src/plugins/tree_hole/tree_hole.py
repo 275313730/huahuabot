@@ -78,18 +78,43 @@ def get_random_note(qq: str) -> dict:
     # 初始数据:
     conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
-    cursor.execute(fr"select nickname,content from note where qq != '{qq}'")
-    rows = -cursor.rowcount
-    if rows > 0:
-        random_index = randint(1, rows)
-        index = 1
-        for row in cursor:
-            if index == random_index:
-                note['nickname'] = row[0]
-                note['content'] = row[1]
-                break
-            index += 1
+    rows = cursor.execute("SELECT COUNT(*) FROM table_name").fetchone()[0]
+    random_index = randint(1, rows)
+    index = 1
+    cursor.execute(fr"select uid,nickname,content from note where qq != '{qq}'")
+    for row in cursor:
+        if index == random_index:
+            note['uid'] = row[0]
+            note['nickname'] = row[1]
+            note['content'] = row[2]
+            break
+        index += 1
     cursor.close()
     conn.commit()
+
     conn.close()
     return note
+
+
+def get_my_notes(qq: str) -> str:
+    db_file = os.path.join(os.path.dirname(__file__), 'tree_hole.db')
+    # 初始数据:
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+    cursor.execute(fr"select uid,nickname,content from note where qq = '{qq}'")
+    notes_str = trans_notes_to_str(list(cursor))
+    cursor.close()
+    conn.commit()
+    return notes_str
+
+
+def trans_note_to_str(note: dict) -> str:
+    return str(f"来自'{note[1]}'的小纸条(uid:{note[0]})："
+               f"\n{note[2]}")
+
+
+def trans_notes_to_str(notes: list) -> str:
+    notes_str = ""
+    for note in notes:
+        notes_str += f"{trans_note_to_str(note)}\n\n"
+    return notes_str

@@ -53,7 +53,7 @@ async def _(state: T_State, event: PrivateMessageEvent):
     if exist:
         note = tree_hole.get_random_note(str(event.user_id))
         if note['nickname']:
-            await random_note.finish(f"来自'{note['nickname']}'的小纸条："
+            await random_note.finish(f"\n来自'{note['nickname']}'的小纸条(uid:)："
                                      f"\n{note['content']}")
         else:
             await random_note.finish("暂无小纸条")
