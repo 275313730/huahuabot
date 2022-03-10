@@ -7,7 +7,7 @@ from nonebot.typing import T_State
 
 from . import tree_hole
 
-delete_notes = on_command("清除树洞数据", rule=to_me(), priority=1, block=True)
+delete_notes = on_command("清除树洞数据", rule=to_me(), priority=1, block=True, permission=SUPERUSER)
 
 
 @delete_notes.got("confirm", prompt="请输入'确认清除'以确认操作")
@@ -29,7 +29,7 @@ async def _(event: PrivateMessageEvent):
 @add_user.got("nickname", prompt="输入你的树洞昵称")
 async def _(state: T_State, event: PrivateMessageEvent):
     nickname = str(state['nickname'])
-    tree_hole.add_user(qq=str(event.user_id), nickname=nickname)
+    tree_hole.join_tree_hole(qq=str(event.user_id), nickname=nickname)
     await add_user.finish("欢迎加入树洞")
 
 
@@ -46,7 +46,7 @@ async def _(event: PrivateMessageEvent):
 @add_note.got("content", prompt="随便写点什么都可以哦（目前只支持纯文字消息，请勿发送表情和图片等其他内容）")
 async def _(state: T_State, event: PrivateMessageEvent):
     content = str(state['content'])
-    status = tree_hole.add_note(qq=str(event.user_id), content=content)
+    status = tree_hole.post_note(qq=str(event.user_id), content=content)
     if status:
         await add_note.finish("小纸条已投递")
     else:
@@ -74,6 +74,23 @@ my_notes = on_command("我的小纸条", rule=to_me(), priority=2, block=True)
 
 @my_notes.handle()
 async def _(event: PrivateMessageEvent):
+    exist = tree_hole.check_qq_exist(str(event.user_id))
+    if exist:
+        note_str = tree_hole.get_my_notes(str(event.user_id))
+        if note_str != "":
+            await random_note.finish(note_str)
+        else:
+            await random_note.finish("暂无小纸条")
+    else:
+        await random_note.finish("你还没有加入树洞呢")
+
+
+report_note = on_command("举报小纸条", rule=to_me(), priority=2, block=True)
+
+
+@report_note.handle()
+async def _(event: PrivateMessageEvent):
+    uid = args.split
     exist = tree_hole.check_qq_exist(str(event.user_id))
     if exist:
         note_str = tree_hole.get_my_notes(str(event.user_id))
