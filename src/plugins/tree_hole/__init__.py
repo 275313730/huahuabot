@@ -90,13 +90,25 @@ report_note = on_command("举报小纸条", rule=to_me(), priority=2, block=True
 
 @report_note.handle()
 async def _(event: PrivateMessageEvent):
-    uid = args.split
     exist = tree_hole.check_qq_exist(str(event.user_id))
-    if exist:
-        note_str = tree_hole.get_my_notes(str(event.user_id))
-        if note_str != "":
-            await random_note.finish(note_str)
-        else:
-            await random_note.finish("暂无小纸条")
+    if not exist:
+        await report_note.finish("请加入树洞后再使用其他命令")
+
+
+@report_note.got("uid", prompt="请输入小纸条编号")
+async def _(state: T_State, event: PrivateMessageEvent):
+    uid = int(str(state['uid']))
+    if not tree_hole.check_note_exist(uid):
+        await report_note.finish("编号错误")
+
+
+@report_note.got("content", prompt="请输入具体描述")
+async def _(state: T_State, event: PrivateMessageEvent):
+    qq = str(event.user_id)
+    uid = int(str(state['uid']))
+    content = str(state['content'])
+    status = tree_hole.report_note(qq, uid, content)
+    if status:
+        await report_note.finish("举报成功")
     else:
-        await random_note.finish("你还没有加入树洞呢")
+        await report_note.finish("举报失败")

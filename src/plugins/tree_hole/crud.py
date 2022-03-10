@@ -1,6 +1,8 @@
 import os
 import sqlite3
 
+from nonebot import logger
+
 
 def empty_db() -> bool:
     """清空数据库"""
@@ -141,12 +143,14 @@ def get_note_by_uid(uid: int) -> list:
     return note
 
 
-def update_note_report(uid: int, report: str) -> bool:
+def update_note(uid: int, option: str, content: str) -> bool:
+    """更新小纸条内容"""
+
     db_file = os.path.join(os.path.dirname(__file__), 'tree_hole.db')
     # 初始数据:
     conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
-    cursor.execute(fr"update note set report = {report} ,where uid = '{uid}'")
+    cursor.execute(fr"update note set {option} = '{content}' where uid = {uid}")
     cursor.close()
     conn.commit()
     conn.close()

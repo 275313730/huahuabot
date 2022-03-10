@@ -1,21 +1,30 @@
 # -*- coding: utf-8 -*-
 import json
-import os
-import sqlite3
 from random import randint
 
 from nonebot import logger
+from nonebot.adapters.onebot.v11 import unescape
 
 from . import crud
 
 
 def check_qq_exist(qq: str) -> bool:
-    exist = False
+    """查看qq号是否存在"""
 
+    exist = False
     users = crud.get_user(qq)
     if len(users) > 0:
         exist = True
+    return exist
 
+
+def check_note_exist(uid: int) -> bool:
+    """查看指定编号的小纸条是否存在"""
+
+    exist = False
+    notes = crud.get_note_by_uid(uid)
+    if len(notes) > 0:
+        exist = True
     return exist
 
 
@@ -39,10 +48,11 @@ def post_note(qq: str, content: str) -> bool:
 def get_someone_notes(qq: str) -> str:
     """获取某人的小纸条"""
 
+    note_str = ""
     notes = crud.get_notes_from(qq)
     if len(notes) > 0:
-        return trans_notes_to_str(notes)
-    return ""
+        note_str = trans_notes_to_str(notes)
+    return note_str
 
 
 def get_random_note(qq: str) -> str:
@@ -83,14 +93,15 @@ def trans_notes_to_str(notes: list) -> str:
     return notes_str
 
 
-def report_note(uid: int, qq: str, nickname: str, content: str):
+def report_note(qq: str, uid: int, content: str):
+    """举报小纸条"""
+
+    status = False
     notes = crud.get_note_by_uid(uid)
     if len(notes) > 0:
         note = notes[0]
-        report: list = json.loads(note["report"])
-        report.append(dict(qq=qq, nickname=nickname, content=content))
-        report_str = json.dumps(report)
-        note["report"] = report_str
-        crud.update_note_report(uid, report_str)
-    else:
-        return False
+        report: list = json.loads(note[3])
+        report.append(dict(qq=qq, content=content))
+        report_str = unescape(json.dumps(report))
+        status = crud.update_note(uid, "report", report_str)
+    return status
