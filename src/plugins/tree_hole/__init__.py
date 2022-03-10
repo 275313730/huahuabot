@@ -7,6 +7,15 @@ from nonebot.typing import T_State
 
 from . import tree_hole
 
+delete_notes = on_command("清除树洞数据", rule=to_me(), priority=1, block=True)
+
+
+@delete_notes.got("confirm", prompt="请输入'确认清除'以确认操作")
+async def _(state: T_State):
+    confirm = str(state['confirm'])
+    pass
+
+
 add_user = on_command("加入树洞", rule=to_me(), priority=1, block=True)
 
 
@@ -41,7 +50,7 @@ async def _(state: T_State, event: PrivateMessageEvent):
     if status:
         await add_note.finish("小纸条已投递")
     else:
-        await  add_note.finish("小纸条投递失败")
+        await add_note.finish("小纸条投递失败")
 
 
 random_note = on_command("捡个小纸条", rule=to_me(), priority=2, block=True)

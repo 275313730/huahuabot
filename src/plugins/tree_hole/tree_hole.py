@@ -7,6 +7,18 @@ from random import randint
 from nonebot import logger
 
 
+def empty_db() -> bool:
+    db_file = os.path.join(os.path.dirname(__file__), 'tree_hole.db')
+    # 初始数据:
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+    cursor.execute(r"DELETE FROM sqlite_sequence WHERE name = ‘note’")
+    cursor.close()
+    conn.commit()
+    conn.close()
+    return True
+
+
 def check_qq_exist(qq: str) -> bool:
     exist = False
 
