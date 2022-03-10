@@ -43,7 +43,7 @@ async def _(event: PrivateMessageEvent):
         await add_note.finish("加入树洞才能投递小纸条哦")
 
 
-@add_note.got("content", prompt="随便写点什么都可以哦，目前只支持文本消息，请勿发送图片等其他内容")
+@add_note.got("content", prompt="随便写点什么都可以哦（目前只支持纯文字消息，请勿发送表情和图片等其他内容）")
 async def _(state: T_State, event: PrivateMessageEvent):
     content = str(state['content'])
     status = tree_hole.add_note(qq=str(event.user_id), content=content)
@@ -60,11 +60,26 @@ random_note = on_command("捡个小纸条", rule=to_me(), priority=2, block=True
 async def _(state: T_State, event: PrivateMessageEvent):
     exist = tree_hole.check_qq_exist(str(event.user_id))
     if exist:
-        note = tree_hole.get_random_note(str(event.user_id))
-        if note['nickname']:
-            await random_note.finish(f"\n来自'{note['nickname']}'的小纸条(uid:)："
-                                     f"\n{note['content']}")
+        note_str = tree_hole.get_random_note(str(event.user_id))
+        if note_str != "":
+            await random_note.finish(note_str)
         else:
             await random_note.finish("暂无小纸条")
     else:
         await random_note.finish("加入树洞才能看到别人的小纸条哦")
+
+
+my_notes = on_command("我的小纸条", rule=to_me(), priority=2, block=True)
+
+
+@my_notes.handle()
+async def _(event: PrivateMessageEvent):
+    exist = tree_hole.check_qq_exist(str(event.user_id))
+    if exist:
+        note_str = tree_hole.get_my_notes(str(event.user_id))
+        if note_str != "":
+            await random_note.finish(note_str)
+        else:
+            await random_note.finish("暂无小纸条")
+    else:
+        await random_note.finish("你还没有加入树洞呢")
