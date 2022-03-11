@@ -5,7 +5,7 @@ from nonebot import logger
 
 
 def empty_db() -> bool:
-    """清空数据库"""
+    """清空note数据库"""
 
     db_file = os.path.join(os.path.dirname(__file__), 'tree_hole.db')
     # 初始数据:
@@ -18,14 +18,17 @@ def empty_db() -> bool:
     return True
 
 
-def create_user(qq: str, nickname: str) -> bool:
+# user相关
+
+def create_user(qq: int, nickname: str, time: str) -> bool:
     """创建用户"""
 
     db_file = os.path.join(os.path.dirname(__file__), 'tree_hole.db')
     # 初始数据:
     conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
-    cursor.execute(fr"insert into user values ('{qq}','{nickname}')")
+    cursor.execute(
+        fr"insert into user (qq,nickname,join_time,last_use_time,ban_end_time,favorite) values ({qq},'{nickname}','{time}','{time}','{time}','[]')")
     cursor.close()
     conn.commit()
     conn.close()
@@ -47,35 +50,38 @@ def get_all_users() -> list:
     return users
 
 
-def get_notes_from(qq: str) -> list:
-    """获取指定用户的全部小纸条"""
+def get_user(qq: int) -> list:
+    """获取用户信息"""
 
     db_file = os.path.join(os.path.dirname(__file__), 'tree_hole.db')
     # 初始数据:
     conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
-    cursor.execute(fr"select uid,nickname,content from note where qq = '{qq}'")
-    notes = list(cursor)
+    cursor.execute(fr"select * from user where qq = {qq}")
+    user = list(cursor)
     cursor.close()
     conn.commit()
-    return notes
+    conn.close()
+
+    return user
 
 
-def get_others_notes(qq: str) -> list:
-    """获取除指定用户外的全部小纸条"""
+def update_user(qq: int, option: str, content: str) -> bool:
+    """更新用户信息"""
 
     db_file = os.path.join(os.path.dirname(__file__), 'tree_hole.db')
     # 初始数据:
     conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
-    cursor.execute(fr"select uid,nickname,content from note where qq != '{qq}'")
-    notes = list(cursor)
+    cursor.execute(fr"update user set {option} = '{content}' where qq = {qq}")
     cursor.close()
     conn.commit()
-    return notes
+    conn.close()
+
+    return True
 
 
-def get_nickname(qq: str) -> str:
+def get_nickname(qq: int) -> str:
     """获取指定用户的昵称"""
 
     nickname = ""
@@ -84,7 +90,7 @@ def get_nickname(qq: str) -> str:
     # 初始数据:
     conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
-    cursor.execute(fr"select * from user where qq = '{qq}'")
+    cursor.execute(fr"select * from user where qq = {qq}")
     for row in cursor:
         nickname = row[1]
     cursor.close()
@@ -94,7 +100,9 @@ def get_nickname(qq: str) -> str:
     return nickname
 
 
-def create_note(qq: str, nickname: str, content: str) -> bool:
+# note相关
+
+def create_note(qq: int, nickname: str, content: str) -> bool:
     """创建小纸条"""
 
     db_file = os.path.join(os.path.dirname(__file__), 'tree_hole.db')
@@ -103,7 +111,7 @@ def create_note(qq: str, nickname: str, content: str) -> bool:
     conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
     if nickname:
-        cursor.execute(fr"insert into note (qq,nickname,content) values ('{qq}','{nickname}','{content}')")
+        cursor.execute(fr"insert into note (qq,content,report) values ({qq},'{content}','[]')")
         status = True
     cursor.close()
     conn.commit()
@@ -111,20 +119,32 @@ def create_note(qq: str, nickname: str, content: str) -> bool:
     return status
 
 
-def get_user(qq: str) -> list:
-    """获取用户信息"""
+def get_notes_from(qq: int) -> list:
+    """获取指定用户的全部小纸条"""
 
     db_file = os.path.join(os.path.dirname(__file__), 'tree_hole.db')
     # 初始数据:
     conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
-    cursor.execute(fr"select * from user where qq = '{qq}'")
-    user = list(cursor)
+    cursor.execute(fr"select * from note where qq = {qq}")
+    notes = list(cursor)
     cursor.close()
     conn.commit()
-    conn.close()
+    return notes
 
-    return user
+
+def get_others_notes(qq: int) -> list:
+    """获取除指定用户外的全部小纸条"""
+
+    db_file = os.path.join(os.path.dirname(__file__), 'tree_hole.db')
+    # 初始数据:
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+    cursor.execute(fr"select * from note where qq != {qq}")
+    notes = list(cursor)
+    cursor.close()
+    conn.commit()
+    return notes
 
 
 def get_note_by_uid(uid: int) -> list:
@@ -144,13 +164,28 @@ def get_note_by_uid(uid: int) -> list:
 
 
 def update_note(uid: int, option: str, content: str) -> bool:
-    """更新小纸条内容"""
+    """更新小纸条"""
 
     db_file = os.path.join(os.path.dirname(__file__), 'tree_hole.db')
     # 初始数据:
     conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
     cursor.execute(fr"update note set {option} = '{content}' where uid = {uid}")
+    cursor.close()
+    conn.commit()
+    conn.close()
+
+    return True
+
+
+def delete_note(uid: int) -> bool:
+    """删除小纸条"""
+
+    db_file = os.path.join(os.path.dirname(__file__), 'tree_hole.db')
+    # 初始数据:
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+    cursor.execute(fr"delete from note where uid = {uid}")
     cursor.close()
     conn.commit()
     conn.close()
