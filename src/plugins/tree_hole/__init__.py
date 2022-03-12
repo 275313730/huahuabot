@@ -1,12 +1,28 @@
 import nonebot
-from nonebot import on_command, logger
+import nonebot.adapters.onebot.v11.bot
+from nonebot import on_command
 from nonebot.adapters.onebot.v11 import Event
+from nonebot.adapters.onebot.v11.bot import Bot
+from nonebot.internal.matcher import Matcher
 from nonebot.permission import SUPERUSER
 from nonebot.rule import to_me
 from nonebot.adapters.onebot.v11 import PrivateMessageEvent
 from nonebot.typing import T_State
+from nonebot.message import run_preprocessor
 
-from . import tree_hole
+from .src.tree_hole import user, note, admin
+
+
+@run_preprocessor
+async def check_ban(matcher: Matcher, event: PrivateMessageEvent):
+    qq = event.user_id
+    exist = user.check_qq_exist(qq)
+    ban = user.check_qq_ban(qq)
+    if not exist:
+        await matcher.finish("加入树洞才能使用其他指令哦")
+    if ban:
+        await matcher.finish("账号封禁中，如有疑问可以通过'/反馈树洞'提交意见")
+
 
 # 帮助相关
 
@@ -33,7 +49,7 @@ ban_user = on_command("禁用用户", rule=to_me(), priority=1, block=True, perm
 async def _(state: T_State):
     qq = int(str(state['qq']))
 
-    exist = tree_hole.check_qq_exist(qq)
+    exist = user.check_qq_exist(qq)
     if not exist:
         await ban_user.finish("用户不存在")
 
@@ -43,7 +59,7 @@ async def _(state: T_State):
     qq = int(str(state['qq']))
     ban_end = str(state['ban_end'])
 
-    status = tree_hole.ban_qq(qq, ban_end)
+    status = admin.ban_qq(qq, ban_end)
     if status:
         await ban_user.finish("禁用成功")
     else:
@@ -57,7 +73,7 @@ add_user = on_command("加入树洞", rule=to_me(), priority=2, block=True)
 
 @add_user.handle()
 async def _(event: PrivateMessageEvent):
-    exist = tree_hole.check_qq_exist(event.user_id)
+    exist = user.check_qq_exist(event.user_id)
     if exist:
         await add_user.finish("你已经加入树洞啦，请勿重复操作哦")
 
@@ -67,9 +83,9 @@ async def _(state: T_State, event: PrivateMessageEvent):
     qq = event.user_id
     nickname = str(state['nickname'])
 
-    status = tree_hole.join_tree_hole(qq=qq, nickname=nickname)
+    status = user.join_tree_hole(qq=qq, nickname=nickname)
     if status:
-        tree_hole.update_last_use_time(qq)
+        user.update_last_use_time(qq)
         await add_user.finish("欢迎加入树洞")
     else:
         await add_user.finish("加入树洞失败")
@@ -82,9 +98,13 @@ add_note = on_command("投递小纸条", rule=to_me(), priority=2, block=True)
 
 @add_note.handle()
 async def _(event: PrivateMessageEvent):
-    exist = tree_hole.check_qq_exist(event.user_id)
+    qq = event.user_id
+    exist = user.check_qq_exist(qq)
+    ban = user.check_qq_ban(qq)
     if not exist:
         await add_note.finish("加入树洞才能投递小纸条哦")
+    if ban:
+        await add_note.finish("账号封禁中，如有疑问可以通过'/反馈树洞'提交意见")
 
 
 @add_note.got("content", prompt="随便写点什么都可以哦（目前只支持纯文字消息，请勿发送表情和图片等其他内容）")
@@ -92,8 +112,8 @@ async def _(state: T_State, event: PrivateMessageEvent):
     qq = event.user_id
     content = str(state['content'])
 
-    tree_hole.update_last_use_time(qq)
-    status = tree_hole.post_note(qq=qq, content=content)
+    user.update_last_use_time(qq)
+    status = note.post_note(qq=qq, content=content)
     if status:
         await add_note.finish("小纸条已投递")
     else:
@@ -107,10 +127,10 @@ random_note = on_command("捡个小纸条", rule=to_me(), priority=2, block=True
 async def _(event: PrivateMessageEvent):
     qq = event.user_id
 
-    tree_hole.update_last_use_time(qq)
-    exist = tree_hole.check_qq_exist(qq)
+    user.update_last_use_time(qq)
+    exist = user.check_qq_exist(qq)
     if exist:
-        note_str = tree_hole.get_random_note(qq)
+        note_str = note.get_random_note(qq)
         if note_str != "":
             await random_note.finish(note_str)
         else:
@@ -125,7 +145,7 @@ my_notes = on_command("我的小纸条", rule=to_me(), priority=2, block=True)
 @my_notes.handle()
 async def _(event: PrivateMessageEvent):
     qq = event.user_id
-    exist = tree_hole.check_qq_exist(qq)
+    exist = user.check_qq_exist(qq)
     if not exist:
         await random_note.finish("你还没有加入树洞呢")
 
@@ -134,8 +154,8 @@ async def _(event: PrivateMessageEvent):
 async def _(event: PrivateMessageEvent):
     qq = event.user_id
 
-    tree_hole.update_last_use_time(qq)
-    note_str = tree_hole.get_my_notes(qq)
+    user.update_last_use_time(qq)
+    note_str = note.get_my_notes(qq)
     if note_str != "":
         await random_note.finish(note_str)
     else:
@@ -148,7 +168,7 @@ delete_note = on_command("删除小纸条", rule=to_me(), priority=2, block=True
 @delete_note.handle()
 async def _(event: PrivateMessageEvent):
     qq = event.user_id
-    exist = tree_hole.check_qq_exist(qq)
+    exist = user.check_qq_exist(qq)
     if not exist:
         await delete_note.finish("你还没有加入树洞呢")
 
@@ -156,12 +176,12 @@ async def _(event: PrivateMessageEvent):
 @delete_note.got("uid", prompt="请输入小纸条编号")
 async def _(state: T_State, event: PrivateMessageEvent):
     uid = int(str(state['uid']))
-    if not tree_hole.check_note_exist(uid):
+    if not note.check_note_exist(uid):
         await delete_note.finish("编号错误")
-    qq = tree_hole.get_qq_by_note(uid)
+    qq = user.get_qq_by_note(uid)
     if qq != str(event.user_id):
         pass
-    note_str = tree_hole.get_note_by_uid(uid)
+    note_str = note.get_note_by_uid(uid)
     await delete_note.send(f"你选择的小纸条内容如下："
                            f"\n{note_str}")
 
@@ -172,7 +192,7 @@ async def _(state: T_State, event: PrivateMessageEvent):
     uid = int(str(state['uid']))
     confirm = int(str(state['uid']))
     if uid == confirm:
-        tree_hole.delete_note(qq, uid)
+        note.delete_note(qq, uid)
 
 
 report_note = on_command("举报小纸条", rule=to_me(), priority=2, block=True)
@@ -180,7 +200,7 @@ report_note = on_command("举报小纸条", rule=to_me(), priority=2, block=True
 
 @report_note.handle()
 async def _(event: PrivateMessageEvent):
-    exist = tree_hole.check_qq_exist(event.user_id)
+    exist = user.check_qq_exist(event.user_id)
     if not exist:
         await report_note.finish("请加入树洞后再使用其他命令")
 
@@ -188,7 +208,7 @@ async def _(event: PrivateMessageEvent):
 @report_note.got("uid", prompt="请输入小纸条编号")
 async def _(state: T_State):
     uid = int(str(state['uid']))
-    if not tree_hole.check_note_exist(uid):
+    if not note.check_note_exist(uid):
         await report_note.finish("编号错误")
 
 
@@ -198,11 +218,11 @@ async def _(bot: nonebot.adapters.onebot.v11.Bot, state: T_State, event: Private
     uid = int(str(state['uid']))
     description = str(state['description'])
 
-    tree_hole.update_last_use_time(qq)
-    status = tree_hole.report_note(qq, uid, description)
+    user.update_last_use_time(qq)
+    status = note.report_note(qq, uid, description)
     if status:
-        note_str = tree_hole.get_note_by_uid(uid)
-        qq = tree_hole.get_qq_by_note(uid)
+        note_str = note.get_note_by_uid(uid)
+        qq = user.get_qq_by_note(uid)
         await bot.send_private_msg(user_id=275313730, message=f"叮咚！有一个小纸条被举报"
                                                               f"\n被举报人qq：{qq}"
                                                               f"\n{note_str}"
