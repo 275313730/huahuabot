@@ -1,6 +1,5 @@
-from src.plugins.tree_hole.crud import crud
 from . import user
-
+from .. import crud
 
 def ban_qq(qq: int, ban_end: str) -> bool:
     """禁用qq号"""

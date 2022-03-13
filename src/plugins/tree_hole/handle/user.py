@@ -1,5 +1,5 @@
 from datetime import datetime
-from src.plugins.tree_hole.crud import crud
+from .. import crud
 
 
 def join_tree_hole(qq: int, nickname: str) -> bool:
@@ -10,11 +10,27 @@ def join_tree_hole(qq: int, nickname: str) -> bool:
     return crud.user.create_user(qq, nickname, time)
 
 
+def modify_nickname(qq: int, nickname: str) -> bool:
+    """修改昵称"""
+
+    return crud.user.update_user(qq, "nickname", nickname)
+
+
 def check_qq_exist(qq: int) -> bool:
     """查看qq号是否存在"""
 
     exist = False
     users = crud.user.get_user(qq)
+    if len(users) > 0:
+        exist = True
+    return exist
+
+
+def check_nickname_exist(nickname: str) -> bool:
+    """查看qq号是否存在"""
+
+    exist = False
+    users = crud.user.get_user_by_nickname(nickname)
     if len(users) > 0:
         exist = True
     return exist

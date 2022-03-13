@@ -1,10 +1,28 @@
 import json
 from random import randint
-
 from nonebot.adapters.onebot.v11 import unescape
+from .. import crud
 
-from src.plugins.tree_hole.crud import crud
-from . import utils
+
+def trans_note_to_str(note: dict) -> str:
+    """将小纸条dict转化为字符串"""
+
+    nickname = crud.user.get_user(note[1], "nickname")[0][0]
+    return str(f"来自'{nickname}'的小纸条(编号:{note[0]})："
+               f"\n{note[2]}")
+
+
+def trans_notes_to_str(notes: list) -> str:
+    """将小纸条list转化为字符串"""
+
+    notes_str = ""
+    num = len(notes)
+    for i in range(num):
+        if i < num - 1:
+            notes_str += f"{trans_note_to_str(notes[i])}\n\n"
+        else:
+            notes_str += f"{trans_note_to_str(notes[i])}"
+    return notes_str
 
 
 def check_note_exist(uid: int) -> bool:
@@ -21,9 +39,9 @@ def post_note(qq: int, content: str) -> bool:
     """投递小纸条"""
     status = False
 
-    nickname = crud.user.get_nickname(qq)
+    nickname = crud.user.get_user(qq, "nickname")[0][0]
     if nickname:
-        status = crud.note.create_note(qq, nickname, content)
+        status = crud.note.create_note(qq, content)
 
     return status
 
@@ -34,7 +52,7 @@ def get_someone_notes(qq: int) -> str:
     note_str = ""
     notes = crud.note.get_notes_from(qq)
     if len(notes) > 0:
-        note_str = utils.trans_notes_to_str(notes)
+        note_str = trans_notes_to_str(notes)
     return note_str
 
 
@@ -47,7 +65,7 @@ def get_random_note(qq: int) -> str:
     index = 1
     for note in notes:
         if index == random_index:
-            note_str = utils.trans_note_to_str(note)
+            note_str = trans_note_to_str(note)
         index += 1
     return note_str
 
@@ -58,7 +76,7 @@ def get_my_notes(qq: int) -> str:
     notes = crud.note.get_notes_from(qq)
 
     if len(notes) > 0:
-        notes_str = utils.trans_notes_to_str(notes)
+        notes_str = trans_notes_to_str(notes)
     else:
         notes_str = ""
     return notes_str
@@ -97,7 +115,7 @@ def get_note_by_uid(uid: int) -> str:
     notes = crud.note.get_note_by_uid(uid)
     if len(notes) > 0:
         note = notes[0]
-        note_str = utils.trans_note_to_str(note)
+        note_str = trans_note_to_str(note)
     return note_str
 
 

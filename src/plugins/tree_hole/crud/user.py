@@ -1,64 +1,36 @@
-import os
-import sqlite3
+from . import crud
 
 
 def create_user(qq: int, nickname: str, time: str) -> bool:
     """创建用户"""
 
-    db_file = os.path.join(os.path.dirname(__file__), 'tree_hole.db')
-    # 初始数据:
-    conn = sqlite3.connect(db_file)
-    cursor = conn.cursor()
-    cursor.execute(
-        fr"insert into user (qq,nickname,join_time,last_use_time,ban_end_time,favorite) values ({qq},'{nickname}','{time}','{time}','{time}','[]')")
-    cursor.close()
-    conn.commit()
-    conn.close()
-    return True
+    script = fr"insert into user (qq,nickname,join_time,last_use_time,ban_end_time,favorite) values \
+    ({qq},'{nickname}','{time}','{time}','{time}','[]')"
+    return crud.write_data(script)
 
 
 def get_all_users() -> list:
     """获取所有用户"""
 
-    db_file = os.path.join(os.path.dirname(__file__), 'tree_hole.db')
-    # 初始数据:
-    conn = sqlite3.connect(db_file)
-    cursor = conn.cursor()
-    cursor.execute(fr"select * from user")
-    users = list(cursor)
-    cursor.close()
-    conn.commit()
-    conn.close()
-    return users
+    script = "select * from user"
+    return crud.get_data(script)
 
 
 def get_user(qq: int, option: str = "*") -> list:
     """获取用户信息"""
 
-    db_file = os.path.join(os.path.dirname(__file__), 'tree_hole.db')
-    # 初始数据:
-    conn = sqlite3.connect(db_file)
-    cursor = conn.cursor()
-    cursor.execute(fr"select {option} from user where qq = {qq}")
-    user = list(cursor)
-    cursor.close()
-    conn.commit()
-    conn.close()
+    script = fr"select {option} from user where qq = {qq}"
+    return crud.get_data(script)
 
-    return user
+
+def get_user_by_nickname(nickname: str) -> list:
+    """通过昵称获取用户"""
+    script = fr"select * from user where nickname = {nickname}"
+    return crud.get_data(script)
 
 
 def update_user(qq: int, option: str, content: str) -> bool:
     """更新用户信息"""
 
-    db_file = os.path.join(os.path.dirname(__file__), 'tree_hole.db')
-    # 初始数据:
-    conn = sqlite3.connect(db_file)
-    cursor = conn.cursor()
-    cursor.execute(fr"update user set {option} = '{content}' where qq = {qq}")
-    cursor.close()
-    conn.commit()
-    conn.close()
-
-    return True
-
+    script = fr"update user set {option} = '{content}' where qq = {qq}"
+    return crud.write_data(script)
