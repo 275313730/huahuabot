@@ -27,7 +27,7 @@ def check_qq_exist(qq: int) -> bool:
 
 
 def check_nickname_exist(nickname: str) -> bool:
-    """查看qq号是否存在"""
+    """查看昵称是否存在"""
 
     exist = False
     users = crud.user.get_user_by_nickname(nickname)

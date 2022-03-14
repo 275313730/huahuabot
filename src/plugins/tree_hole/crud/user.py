@@ -25,7 +25,7 @@ def get_user(qq: int, option: str = "*") -> list:
 
 def get_user_by_nickname(nickname: str) -> list:
     """通过昵称获取用户"""
-    script = fr"select * from user where nickname = {nickname}"
+    script = fr"select * from user where nickname = '{nickname}'"
     return crud.get_data(script)
 
 

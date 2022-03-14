@@ -26,3 +26,20 @@ async def _(state: T_State, event: PrivateMessageEvent):
         await add_user.finish("欢迎加入树洞")
     else:
         await add_user.finish("加入树洞失败")
+
+
+modify_nickname = on_command("修改昵称", rule=to_me(), priority=2, block=True)
+
+
+@modify_nickname.got("nickname", prompt="请输入要修改的昵称")
+async def _(state: T_State, event: PrivateMessageEvent):
+    qq = event.user_id
+    nickname = str(state['nickname'])
+
+    if user.check_nickname_exist(nickname):
+        await add_user.reject("昵称已存在，请重新修改")
+    status = user.modify_nickname(qq, nickname)
+    if status:
+        await add_user.finish("修改成功")
+    else:
+        await add_user.finish("修改失败")
