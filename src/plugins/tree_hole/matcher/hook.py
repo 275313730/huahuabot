@@ -6,19 +6,14 @@ from nonebot.rule import CommandRule
 
 from ..handle import user
 
-ignore_cmds = ['help', '帮助', '加入树洞']
+ignore_cmds = ['/help', '/帮助', '/加入树洞']
 
 
 @run_preprocessor
 async def check_ban(matcher: Matcher, event: PrivateMessageEvent):
-    checkers: list = list(matcher.rule.checkers)
-    if len(checkers) == 0:
+    args = str(event.get_message()).split(" ")
+    if args[0] in ignore_cmds:
         return
-    checker: Dependent = checkers[0]
-    call: CommandRule = checker.call
-    for cmd in call.cmds:
-        if cmd[0] in ignore_cmds:
-            return
     qq = event.user_id
     exist = user.check_qq_exist(qq)
     ban = user.check_qq_ban(qq)

@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from random import randint
 from nonebot.adapters.onebot.v11 import unescape
 from .. import crud
@@ -8,8 +9,9 @@ def trans_note_to_str(note: dict) -> str:
     """将小纸条dict转化为字符串"""
 
     nickname = crud.user.get_user(note[1], "nickname")[0][0]
-    return str(f"来自'{nickname}'的小纸条(编号:{note[0]})："
-               f"\n{note[2]}")
+    return str(f"来自'{nickname}'的小纸条(编号:{note[0]})"
+               f"\n投递时间：{note[3]}"
+               f"\n小纸条内容：{note[2]}")
 
 
 def trans_notes_to_str(notes: list) -> str:
@@ -41,7 +43,9 @@ def post_note(qq: int, content: str) -> bool:
 
     nickname = crud.user.get_user(qq, "nickname")[0][0]
     if nickname:
-        status = crud.note.create_note(qq, content)
+        stamp = datetime.now()
+        time = stamp.strftime("%y/%m/%d")
+        status = crud.note.create_note(qq, content, time)
 
     return status
 
@@ -86,10 +90,10 @@ def report_note(qq: int, uid: int, description: str) -> bool:
     """举报小纸条"""
 
     status = False
-    notes = crud.note.get_note_by_uid(uid)
+    notes = crud.note.get_note_by_uid(uid, "report")
     if len(notes) > 0:
         note = notes[0]
-        report: list = json.loads(note[3])
+        report: list = json.loads(note[0])
         report.append(dict(qq=qq, description=description))
         report_str = unescape(json.dumps(report))
         status = crud.note.update_note(uid, "report", report_str)
@@ -121,3 +125,36 @@ def get_note_by_uid(uid: int) -> str:
 
 def get_note_report_by_uid(uid: int) -> str:
     pass
+
+
+def add_note_to_favorites(qq: int, uid: int) -> bool:
+    status = False
+
+    if not check_note_exist(uid):
+        return status
+
+    users = crud.user.get_user(qq, 'favorites')
+    if len(users) > 0:
+        user = users[0]
+        favorites: list = json.loads(user[0])
+        if uid in favorites:
+            return status
+        favorites.append(uid)
+        status = crud.user.update_user(qq, 'favorites', json.dumps(favorites))
+    return status
+
+
+def remove_note_from_favorites(qq: int, uid: int) -> bool:
+    status = False
+
+    if not check_note_exist(uid):
+        return status
+
+    users = crud.user.get_user(qq, 'favorites')
+    if len(users) > 0:
+        user = users[0]
+        favorites: list = json.loads(user[0])
+        if uid in favorites:
+            favorites.append(uid)
+            status = crud.user.update_user(qq, 'favorites', json.dumps(favorites))
+    return status

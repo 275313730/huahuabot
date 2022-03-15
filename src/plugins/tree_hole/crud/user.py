@@ -4,8 +4,8 @@ from . import crud
 def create_user(qq: int, nickname: str, time: str) -> bool:
     """创建用户"""
 
-    script = fr"insert into user (qq,nickname,join_time,last_use_time,ban_end_time,favorite) values \
-    ({qq},'{nickname}','{time}','{time}','{time}','[]')"
+    script = fr"insert into user (qq,nickname,join_time,last_use_time,ban_end_time) values \
+    ({qq},'{nickname}','{time}','{time}','{time}')"
     return crud.write_data(script)
 
 

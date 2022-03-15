@@ -1,11 +1,10 @@
 from . import crud
 
 
-def create_note(qq: int, content: str) -> bool:
+def create_note(qq: int, content: str, time: str) -> bool:
     """创建小纸条"""
 
-    script = fr"insert into note (qq,content,report) values ({qq},'{content}','[]')"
-
+    script = fr"insert into note (qq,content,post_time) values ({qq},'{content}','{time}')"
     return crud.write_data(script)
 
 
@@ -23,10 +22,10 @@ def get_others_notes(qq: int) -> list:
     return crud.get_data(script)
 
 
-def get_note_by_uid(uid: int) -> list:
+def get_note_by_uid(uid: int, option: str = "*") -> list:
     """通过uid获取小纸条"""
 
-    script = fr"select * from note where uid = '{uid}'"
+    script = fr"select {option} from note where uid = '{uid}'"
     return crud.get_data(script)
 
 
