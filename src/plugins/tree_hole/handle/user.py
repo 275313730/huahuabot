@@ -59,12 +59,12 @@ def update_last_use_time(qq: int) -> bool:
     return status
 
 
-def get_qq_by_note(uid: int) -> str:
+def get_qq_by_note(uid: int) -> int:
     """获取小纸条的所属用户"""
 
-    qq = ""
-    notes = crud.note.get_note_by_uid(uid)
+    qq = 0
+    notes = crud.note.get_note_by_uid(uid, "qq")
     if len(notes) > 0:
         note = notes[0]
-        qq = note[1]
+        qq = int(note[0])
     return qq

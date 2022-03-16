@@ -1,11 +1,10 @@
 from nonebot import on_command
+from nonebot.adapters.onebot.v11 import PrivateMessageEvent
 from nonebot.permission import SUPERUSER
 from nonebot.rule import to_me
 from nonebot.typing import T_State
 
-from ..handle import user, admin
-
-# 管理相关
+from ..handle import user, admin, note
 
 ban_user = on_command("禁用用户", rule=to_me(), priority=1, block=True, permission=SUPERUSER)
 
@@ -31,3 +30,19 @@ async def _(state: T_State):
         await ban_user.finish("禁用失败")
 
 
+check_note_reports = on_command("查看举报", rule=to_me(), priority=1, block=True, permission=SUPERUSER)
+
+
+@check_note_reports.handle()
+async def _(event: PrivateMessageEvent):
+    args = str(event.get_message()).split(" ")
+    if len(args) < 2:
+        await check_note_reports.finish("小纸条编号没有填写哦")
+
+    uid = int(str(args[1]))
+
+    if not note.check_note_exist(uid):
+        await check_note_reports.finish("小纸条不存在")
+
+    report_str = note.get_note_reports_by_uid(uid)
+    await check_note_reports.finish(report_str)

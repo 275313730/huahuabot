@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 from random import randint
+
 from nonebot.adapters.onebot.v11 import unescape
 from .. import crud
 
@@ -37,6 +38,17 @@ def check_note_exist(uid: int) -> bool:
     return exist
 
 
+def check_note_visible(uid: int) -> bool:
+    """查看指定编号的小纸条是否被删除"""
+
+    visible = True
+    notes = crud.note.get_note_by_uid(uid, "visible")
+    if len(notes) > 0:
+        note = notes[0]
+        visible = (note[0] == 1)
+    return visible
+
+
 def post_note(qq: int, content: str) -> bool:
     """投递小纸条"""
     status = False
@@ -54,7 +66,7 @@ def get_someone_notes(qq: int) -> str:
     """获取某人的小纸条"""
 
     note_str = ""
-    notes = crud.note.get_notes_from(qq)
+    notes = crud.note.get_notes_from(qq, "uid,qq,content,post_time")
     if len(notes) > 0:
         note_str = trans_notes_to_str(notes)
     return note_str
@@ -63,14 +75,28 @@ def get_someone_notes(qq: int) -> str:
 def get_random_note(qq: int) -> str:
     """随机获取一个小纸条"""
 
+    read: list = []
+
     note_str = ""
-    notes = crud.note.get_others_notes(qq)
-    random_index = randint(1, len(notes))
-    index = 1
-    for note in notes:
-        if index == random_index:
-            note_str = trans_note_to_str(note)
-        index += 1
+    users = crud.user.get_user(qq, "read")
+
+    if len(users) > 0:
+        user = users[0]
+        read: list = json.loads(user[0])
+
+    notes = crud.note.get_others_notes(qq, "uid,qq,content,post_time", read)
+    if len(notes) == 0:
+        note_str = "暂无新的小纸条"
+    else:
+        random_index = randint(1, len(notes))
+        index = 1
+        for note in notes:
+            if index == random_index:
+                read.append(note[0])
+                read_str = json.dumps(read)
+                crud.user.update_user(qq, "read", read_str)
+                note_str = trans_note_to_str(note)
+            index += 1
     return note_str
 
 
@@ -123,8 +149,21 @@ def get_note_by_uid(uid: int) -> str:
     return note_str
 
 
-def get_note_report_by_uid(uid: int) -> str:
-    pass
+def get_note_reports_by_uid(uid: int) -> str:
+    reports_str = ""
+
+    notes = crud.note.get_note_by_uid(uid, "reports")
+    reports_str += get_note_by_uid(uid)
+    if len(notes) > 0:
+        note = notes[0]
+        reports: list = json.loads(note[0])
+        for report in reports:
+            reports_str += str(f"\n————————————"
+                               f"\n举报人qq：{report['qq']}"
+                               f"\n举报描述：{report['description']}")
+    else:
+        reports_str += "\n\n暂无举报"
+    return reports_str
 
 
 def add_note_to_favorites(qq: int, uid: int) -> bool:

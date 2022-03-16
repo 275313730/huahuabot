@@ -83,23 +83,30 @@ async def _(event: PrivateMessageEvent):
         await random_note.finish("暂无小纸条")
 
 
-delete_note = on_command("删除小纸条", rule=to_me(), priority=2, block=True)
+delete_note = on_command("删除小纸条", aliases={"删除"}, rule=to_me(), priority=2, block=True)
 
 
 @delete_note.got("uid", prompt="请输入小纸条编号")
 async def _(state: T_State, event: PrivateMessageEvent):
     uid = int(str(state['uid']))
+    qq = int(str(event.user_id))
+
     if not note.check_note_exist(uid):
-        await delete_note.finish("编号错误")
-    qq = user.get_qq_by_note(uid)
-    if qq != str(event.user_id):
+        await delete_note.finish("编号好像不太对呢")
+
+    note_qq = user.get_qq_by_note(uid)
+    if note_qq != qq:
         await delete_note.finish("你怎么想着删别人的小纸条呢")
+
+    if not note.check_note_visible(uid):
+        await delete_note.finish("小纸条已经被删除，请不要重复操作哦")
+
     note_str = note.get_note_by_uid(uid)
     await delete_note.send(f"你选择的小纸条内容如下："
                            f"\n{note_str}")
 
 
-@delete_note.got("confirm", prompt="如确认删除，请再次输入小纸条编号")
+@delete_note.got("confirm", prompt="如确认删除，请再次输入小纸条编号（删除后无法恢复小纸条，请谨慎操作）")
 async def _(state: T_State, event: PrivateMessageEvent):
     status = False
     qq = event.user_id
