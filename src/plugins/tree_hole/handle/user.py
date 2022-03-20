@@ -1,5 +1,5 @@
 from datetime import datetime
-from ..database import db
+from .. import database as db
 
 
 def join_tree_hole(qq: int, nickname: str) -> bool:

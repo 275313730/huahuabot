@@ -1,5 +1,5 @@
 from . import user
-from ..database import db
+from .. import database as db
 
 
 def ban_qq(qq: int, ban_end: str) -> bool:

@@ -58,6 +58,3 @@ def check_tables():
     conn.commit()
     conn.close()
     return data
-
-
-check_tables()

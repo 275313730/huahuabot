@@ -3,7 +3,7 @@ from datetime import datetime
 from random import randint
 
 from nonebot.adapters.onebot.v11 import unescape
-from ..database import db
+from .. import database as db
 
 
 def trans_note_to_str(note: dict) -> str:
