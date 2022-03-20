@@ -3,13 +3,13 @@ from nonebot.adapters.onebot.v11.event import MessageEvent
 from nonebot.typing import T_State
 
 from ...database import DB
-from ...utils import get_type_id, permission_check, to_me, handle_uid
+from ...utils import get_type_id,  to_me, handle_uid
 
 
-delete_sub = on_command("取关", aliases={"删除主播"}, rule=to_me(), priority=5)
+delete_sub = on_command(
+    "取关", aliases={"删除主播"}, rule=to_me(), priority=2, block=True)
 delete_sub.__doc__ = """取关 UID"""
 
-delete_sub.handle()(permission_check)
 
 delete_sub.handle()(handle_uid)
 

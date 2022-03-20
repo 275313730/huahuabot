@@ -5,7 +5,7 @@ from ..utils import to_me
 
 
 help = on_command("help bilibili", aliases={
-                  "help b站", "帮助 bilibili", "帮助 b站"}, rule=to_me(), priority=5)
+                  "help b站", "帮助 bilibili", "帮助 b站"}, rule=to_me(), priority=2)
 
 
 @help.handle()
@@ -15,7 +15,7 @@ async def test():
         for matcher in matchers_list:
             if (
                 matcher.plugin_name
-                and matcher.plugin_name.startswith("haruka_bot")
+                and matcher.plugin_name.startswith("bilibili")
                 and matcher.__doc__
             ):
                 message += matcher.__doc__ + "\n"

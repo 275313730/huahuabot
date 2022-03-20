@@ -3,15 +3,14 @@ from nonebot.adapters.onebot.v11.event import MessageEvent
 from nonebot.typing import T_State
 
 from ...database import DB
-from ...utils import permission_check, to_me, get_type_id, handle_uid
+from ...utils import to_me, get_type_id, handle_uid
 from bilireq.user import get_user_info
 from bilireq.exceptions import ResponseCodeError
 
 
-add_sub = on_command("关注", aliases={"添加主播"}, rule=to_me(), priority=5)
+add_sub = on_command("关注", aliases={"添加主播"},
+                     rule=to_me(), priority=2, block=True)
 add_sub.__doc__ = """关注 UID"""
-
-add_sub.handle()(permission_check)
 
 add_sub.handle()(handle_uid)
 
