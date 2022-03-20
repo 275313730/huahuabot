@@ -15,13 +15,10 @@ def get_notes_from(qq: int, options: str = '*') -> list:
     return crud.get_data(script)
 
 
-def get_others_notes(qq: int, options: str = '*', expect: list = None) -> list:
+def get_others_notes(qq: int, options: str = '*', expect: list = []) -> list:
     """获取除指定用户外的全部小纸条"""
 
     script = fr"select {options} from note where qq != {qq} and visible != 0"
-
-    if expect is None:
-        expect = []
 
     for uid in expect:
         script += fr" and uid != {uid}"

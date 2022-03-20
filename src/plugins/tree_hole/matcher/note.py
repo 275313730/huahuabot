@@ -1,12 +1,13 @@
 import nonebot.adapters.onebot.v11.bot
 from nonebot import on_command
 from nonebot.rule import to_me
-from nonebot.adapters.onebot.v11 import PrivateMessageEvent
+from nonebot.adapters.onebot.v11 import PrivateMessageEvent, Bot
 from nonebot.typing import T_State
 
 from ..handle import user, note
 
-add_note = on_command("投递小纸条", aliases={"投递"}, rule=to_me(), priority=2, block=True)
+add_note = on_command(
+    "投递小纸条", aliases={"投递"}, rule=to_me(), priority=2, block=True)
 
 
 @add_note.got("content", prompt="随便写点什么都可以哦")
@@ -25,7 +26,8 @@ async def _(state: T_State, event: PrivateMessageEvent):
         await add_note.finish("小纸条投递失败")
 
 
-random_note = on_command("捡取小纸条", aliases={"捡取"}, rule=to_me(), priority=2, block=True)
+random_note = on_command(
+    "捡取小纸条", aliases={"捡取"}, rule=to_me(), priority=2, block=True)
 
 
 @random_note.handle()
@@ -39,7 +41,8 @@ async def _(event: PrivateMessageEvent):
         await random_note.finish("暂无小纸条")
 
 
-add_note_to_favorites = on_command("收藏小纸条", aliases={"收藏"}, rule=to_me(), priority=2, block=True)
+add_note_to_favorites = on_command(
+    "收藏小纸条", aliases={"收藏"}, rule=to_me(), priority=2, block=True)
 
 
 @add_note_to_favorites.handle()
@@ -56,7 +59,8 @@ async def _(event: PrivateMessageEvent):
         await add_note_to_favorites.finish("收藏失败，可能已经收藏了")
 
 
-remove_note_from_favorites = on_command("取消收藏小纸条", aliases={"取消收藏"}, rule=to_me(), priority=2, block=True)
+remove_note_from_favorites = on_command(
+    "取消收藏小纸条", aliases={"取消收藏"}, rule=to_me(), priority=2, block=True)
 
 
 @remove_note_from_favorites.handle()
@@ -73,7 +77,8 @@ async def _(event: PrivateMessageEvent):
         await remove_note_from_favorites.finish("取消收藏失败，可能没有收藏过哦")
 
 
-my_notes = on_command("我的小纸条", aliases={"我的"}, rule=to_me(), priority=2, block=True)
+my_notes = on_command(
+    "我的小纸条", aliases={"我的"}, rule=to_me(), priority=2, block=True)
 
 
 @my_notes.handle()
@@ -87,7 +92,8 @@ async def _(event: PrivateMessageEvent):
         await random_note.finish("暂无小纸条")
 
 
-delete_note = on_command("删除小纸条", aliases={"删除"}, rule=to_me(), priority=2, block=True)
+delete_note = on_command(
+    "删除小纸条", aliases={"删除"}, rule=to_me(), priority=2, block=True)
 
 
 @delete_note.got("uid", prompt="请输入小纸条编号")
@@ -124,7 +130,8 @@ async def _(state: T_State, event: PrivateMessageEvent):
         await delete_note.finish("删除失败")
 
 
-report_note = on_command("举报小纸条", aliases={"举报"}, rule=to_me(), priority=2, block=True)
+report_note = on_command(
+    "举报小纸条", aliases={"举报"}, rule=to_me(), priority=2, block=True)
 
 
 @report_note.got("uid", prompt="请输入小纸条编号")
@@ -135,7 +142,7 @@ async def _(state: T_State):
 
 
 @report_note.got("description", prompt="请输入具体描述")
-async def _(bot: nonebot.adapters.onebot.v11.Bot, state: T_State, event: PrivateMessageEvent):
+async def _(bot: Bot, state: T_State, event: PrivateMessageEvent):
     qq = event.user_id
     uid = int(str(state['uid']))
     description = str(state['description'])
