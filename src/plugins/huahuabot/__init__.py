@@ -2,7 +2,7 @@ from nonebot import on_command
 from nonebot.adapters.onebot.v11 import PrivateMessageEvent
 from nonebot.rule import to_me
 
-help = on_command("help", aliases={"帮助"}, priority=2, block=True)
+help = on_command("help", aliases={"帮助"}, priority=5, block=True)
 
 
 @help.handle()
