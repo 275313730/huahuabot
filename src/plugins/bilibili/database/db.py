@@ -4,14 +4,12 @@ from typing import Dict, List, Optional
 
 from nonebot import get_driver
 from nonebot.log import logger
-from packaging.version import Version
 from tortoise import Tortoise
 from tortoise.expressions import Q
 from tortoise.queryset import QuerySet
 
 from ..utils import get_path
 from .models import Group, Sub, User
-from .models import Version as DBVersion
 
 uid_list = {"live": {"list": [], "index": 0},
             "dynamic": {"list": [], "index": 0}}
