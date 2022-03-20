@@ -5,7 +5,7 @@ from ..utils import to_me
 
 
 help = on_command("help bilibili", aliases={
-                  "help b站", "帮助 bilibili", "帮助 b站"}, rule=to_me(), priority=2)
+                  "help b站", "帮助 bilibili", "帮助 b站"}, rule=to_me(), priority=2, block=True)
 
 
 @help.handle()
