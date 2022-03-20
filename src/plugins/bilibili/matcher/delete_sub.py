@@ -2,8 +2,7 @@ from nonebot import on_command
 from nonebot.adapters.onebot.v11.event import MessageEvent
 from nonebot.typing import T_State
 
-from ...database import DB
-from ...utils import get_type_id,  to_me, handle_uid
+from ..utils import get_type_id,  to_me, handle_uid
 
 
 delete_sub = on_command(

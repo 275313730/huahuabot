@@ -1,6 +1,5 @@
 from . import (  # noqa: F401
     pusher,
-    sub,
     help,
 )
 

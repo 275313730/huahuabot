@@ -1,28 +1,25 @@
+import json
 from nonebot import on_command
-from nonebot.adapters.onebot.v11.event import MessageEvent
+from nonebot.adapters.onebot.v11.event import PrivateMessageEvent
 from nonebot.typing import T_State
+from nonebot.rule import to_me
 
-from ...database import DB
-from ...utils import to_me, get_type_id, handle_uid
 from bilireq.user import get_user_info
 from bilireq.exceptions import ResponseCodeError
 
+from ..database import db
 
 add_sub = on_command("关注", aliases={"添加主播"},
                      rule=to_me(), priority=2, block=True)
 add_sub.__doc__ = """关注 UID"""
 
-add_sub.handle()(handle_uid)
-
 
 @add_sub.got("uid", prompt="请输入要关注的UID")
-async def _(event: MessageEvent, state: T_State):
+async def _(event: PrivateMessageEvent, state: T_State):
     """根据 UID 订阅 UP 主"""
 
     uid = state["uid"]
-    async with DB() as db:
-        user = await db.get_user(uid)
-        name = user and user.name
+    name = db.get_up_name(uid)
     if not name:
         try:
             name = (await get_user_info(uid, reqtype="web"))['name']
@@ -36,10 +33,14 @@ async def _(event: MessageEvent, state: T_State):
                     f"未知错误，请联系开发者反馈，错误内容：\n\
                                     {str(e)}"
                 )
-    async with DB() as db:
-        result = await db.add_sub(
-            uid, event.message_type, get_type_id(event), event.self_id, name
-        )
+
+    data = db.get_push_list(uid, "dynamic")
+    result = False
+    if len(data) > 0:
+        push_list_str = data[0]
+        push_list: list = json.loads(push_list_str)
+        push_list.append(event.user_id)
+        result = db.add_sub(uid, json.dumps(push_list))
     if result:
         await add_sub.finish(f"已关注 {name}（{uid}）")
     await add_sub.finish(f"{name}（{uid}）已经关注了")

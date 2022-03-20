@@ -1,7 +1,6 @@
 from nonebot import on_command
 from nonebot.matcher import matchers
-
-from ..utils import to_me
+from nonebot.rule import to_me
 
 
 help = on_command("help bilibili", aliases={

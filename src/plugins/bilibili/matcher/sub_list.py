@@ -1,7 +1,7 @@
 from nonebot import on_command
 from nonebot.adapters.onebot.v11.event import MessageEvent
-from ...database import DB
-from ...utils import get_type_id, to_me
+from ..database import DB
+from ..utils import get_type_id, to_me
 
 sub_list = on_command(
     "关注列表", aliases={"主播列表"}, rule=to_me(), priority=2, block=True)

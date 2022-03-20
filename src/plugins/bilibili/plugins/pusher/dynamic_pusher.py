@@ -9,6 +9,8 @@ from ...database import DB
 from ...libs.dynamic import Dynamic
 from ...utils import safe_send, scheduler, get_dynamic_screenshot
 
+from ...database import db
+
 last_time = {}
 
 
@@ -16,13 +18,12 @@ last_time = {}
 async def dy_sched():
     """直播推送"""
 
-    async with DB() as db:
-        uid = await db.next_uid("dynamic")
-        if not uid:
-            return
-        user = await db.get_user(uid)
-        assert user is not None
-        name = user.name
+    uid = db.next_uid("dynamic")
+    if not uid:
+        return
+    user = db.get_user(uid)
+    assert user is not None
+    name = user['name']
 
     logger.debug(f"爬取动态 {name}（{uid}）")
     dynamics = (await get_user_dynamics(uid)).get("cards", [])  # 获取最近十二条动态
@@ -58,12 +59,11 @@ async def dy_sched():
                 logger.error("已达到重试上限，将在下个轮询中重新尝试")
             await dynamic.format(image)
 
-            async with DB() as db:
-                push_list = await db.get_push_list(uid, "dynamic")
-                for sets in push_list:
-                    await safe_send(
-                        sets.bot_id, sets.type, sets.type_id, dynamic.message
-                    )
+            push_list = db.get_push_list(uid, "dynamic")
+            for sets in push_list:
+                await safe_send(
+                    sets.bot_id, sets.type_id, dynamic.message
+                )
 
             last_time[uid] = dynamic.time
     await DB.update_user(uid, dynamic.name)  # type: ignore
