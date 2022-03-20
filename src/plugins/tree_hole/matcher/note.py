@@ -14,10 +14,10 @@ add_note = on_command(
 async def _(state: T_State, event: PrivateMessageEvent):
     qq = event.user_id
     content = str(state['content'])
-    if len(content) > 140:
-        await add_note.finish("小纸条字数不可以超过140字哦")
+    if len(content) > 300:
+        await add_note.finish("小纸条字数超过300了，无法投递，请整理好文字再后重新投递")
     if 'CQ:image' in content or 'CQ:face' in content:
-        await add_note.finish("请不要发送图片和表情，小纸条只支持纯文字消息哦")
+        await add_note.finish("请不要发送图片和表情，小纸条只支持纯文字消息")
 
     status = note.post_note(qq=qq, content=content)
     if status:
