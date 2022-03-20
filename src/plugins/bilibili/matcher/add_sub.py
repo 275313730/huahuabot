@@ -34,13 +34,18 @@ async def _(event: PrivateMessageEvent, state: T_State):
                                     {str(e)}"
                 )
 
-    data = db.get_push_list(uid, "dynamic")
+    result = handle_add_sub(uid, event.user_id)
+    if result:
+        await add_sub.finish(f"已关注 {name}（{uid}）")
+    await add_sub.finish(f"{name}（{uid}）已经关注了")
+
+
+def handle_add_sub(uid: int, qq: int) -> bool:
+    data = db.get_push_list(uid)
     result = False
     if len(data) > 0:
         push_list_str = data[0]
         push_list: list = json.loads(push_list_str)
-        push_list.append(event.user_id)
+        push_list.append(qq)
         result = db.add_sub(uid, json.dumps(push_list))
-    if result:
-        await add_sub.finish(f"已关注 {name}（{uid}）")
-    await add_sub.finish(f"{name}（{uid}）已经关注了")
+    return result

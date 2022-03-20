@@ -82,8 +82,12 @@ def get_up_name(uid: int) -> list:
     return get_data(script)
 
 
-def get_push_list(uid: int, _type: str) -> list:
+def get_push_list(uid: int) -> list:
     """获取推送列表"""
 
     script = fr"select sub_list from sub where uid = {uid}"
     return get_data(script)
+
+
+def delete_sub(uid: int, qq: int) -> bool:
+    return True
