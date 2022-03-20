@@ -19,11 +19,39 @@ async def _(event: PrivateMessageEvent):
 async def _(state: T_State, event: PrivateMessageEvent):
     qq = event.user_id
     nickname = str(state['nickname'])
-
+    if user.check_nickname_exist(nickname):
+        await add_user.reject("昵称已存在，请输入其他昵称")
     status = user.join_tree_hole(qq=qq, nickname=nickname)
     if status:
-        user.update_last_use_time(qq)
-        await add_user.finish("欢迎加入树洞")
+        rule_str = f"在加入树洞之前，希望你能认真阅读并严格遵守以下规则" \
+                   f"\n风控类规则：" \
+                   f"\nA类（违反将会永久封禁账号）" \
+                   f"\n1.反对宪法所确定的基本原则的" \
+                   f"\n2.危害国家安全，泄露国家秘密，颠覆国家政权，破坏国家统一的" \
+                   f"\n3.损害国家荣誉和利益的" \
+                   f"\n4.煽动民族仇恨、民族歧视，破坏民族团结的" \
+                   f"\n5.破坏国家宗教政策，宣扬邪教和封建迷信的" \
+                   f"\n6.散布谣言，扰乱社会秩序，破坏社会稳定的" \
+                   f"\n7.散布淫秽、色情、赌博、暴力、凶杀、恐怖或者教唆犯罪的" \
+                   f"\n8.侮辱或者诽谤他人，侵害他人合法权益的" \
+                   f"\n9.含有法律、行政法规禁止的其他内容的" \
+                   f"\n" \
+                   f"\nB类（违反将会封禁账号一段时间，据情节严重而定）" \
+                   f"\n1.泄漏他人隐私" \
+                   f"\n2.恶意冒充他人" \
+                   f"\n3.人身攻击" \
+                   f"\n4.垃圾内容（无意义的标点符号，重复发布相同内容等行为）" \
+                   f"\n5.广告、诱导信息等" \
+                   f"\n" \
+                   f"\n如果你在使用过程中发现以上行为，请及时使用'/举报用户'或'/举报小纸条'的指令进行举报" \
+                   f"\n" \
+                   f"\n一般类规则" \
+                   f"\n小纸条：" \
+                   f"\n1.投递小纸条时，请不要发送除文字外的其他消息，包括表情、图片和视频等，并保持小纸条字数在140字以内" \
+                   f"\n2."
+
+        await add_user.finish(rule_str)
+
     else:
         await add_user.finish("加入树洞失败")
 

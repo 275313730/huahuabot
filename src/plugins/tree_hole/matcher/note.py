@@ -9,10 +9,14 @@ from ..handle import user, note
 add_note = on_command("投递小纸条", aliases={"投递"}, rule=to_me(), priority=2, block=True)
 
 
-@add_note.got("content", prompt="随便写点什么都可以哦（目前只支持纯文字消息，请勿发送表情和图片等其他内容）")
+@add_note.got("content", prompt="随便写点什么都可以哦")
 async def _(state: T_State, event: PrivateMessageEvent):
     qq = event.user_id
     content = str(state['content'])
+    if len(content) > 140:
+        await add_note.finish("小纸条字数不可以超过140字哦")
+    if 'CQ:image' in content or 'CQ:face' in content:
+        await add_note.finish("请不要发送图片和表情，小纸条只支持纯文字消息哦")
 
     status = note.post_note(qq=qq, content=content)
     if status:
