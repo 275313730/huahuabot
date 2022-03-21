@@ -3,12 +3,12 @@ from nonebot.matcher import matchers
 from nonebot.rule import to_me
 
 
-help = on_command("help bilibili", aliases={
-                  "help b站", "帮助 bilibili", "帮助 b站"}, rule=to_me(), priority=2, block=True)
+_help = on_command("help bilibili", aliases={
+    "help b站", "帮助 bilibili", "帮助 b站"}, rule=to_me(), priority=2, block=True)
 
 
-@help.handle()
-async def test():
+@_help.handle()
+async def _():
     message = "b站小帮手目前支持的功能：\n（请将UID替换为需要操作的B站UID）"
     for matchers_list in matchers.values():
         for matcher in matchers_list:
@@ -18,7 +18,4 @@ async def test():
                 and matcher.__doc__
             ):
                 message += "\n"+matcher.__doc__
-    message += (
-        f""
-    )
-    await help.finish(message)
+    await _help.finish(message)

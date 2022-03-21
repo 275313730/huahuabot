@@ -1,8 +1,7 @@
-from nonebot.dependencies import Dependent
 from nonebot.internal.matcher import Matcher
 from nonebot.adapters.onebot.v11 import PrivateMessageEvent
 from nonebot.message import run_preprocessor
-from nonebot.rule import CommandRule
+from nonebot.matcher import matchers
 
 from ..handle import user
 
@@ -17,6 +16,8 @@ async def check_ban(matcher: Matcher, event: PrivateMessageEvent):
     qq = event.user_id
     exist = user.check_qq_exist(qq)
     ban = user.check_qq_ban(qq)
+    if(matcher.plugin_name and not matcher.plugin_name.startswith("tree_hole")):
+        return
     if not exist:
         await matcher.finish("加入树洞才能使用其他指令哦")
     if ban:

@@ -1,18 +1,9 @@
 import os
 import sqlite3
-from typing import Dict, List, Optional
-from webbrowser import get
 
-from nonebot import get_driver
-from nonebot.log import logger
-from tortoise.expressions import Q
-from tortoise.queryset import QuerySet
+up_list: list = []
 
-
-uid_list = {"live": {"list": [], "index": 0},
-            "dynamic": {"list": [], "index": 0}}
-
-up_list = [{"uid": 0, "list": []}]
+index = 0
 
 
 def get_database_path() -> str:
@@ -54,17 +45,35 @@ def check_tables():
     "name"  text not null ,
 	"sub_list"	TEXT NOT NULL DEFAULT '[]',
 	PRIMARY KEY("uid"))'''))
-    data = list(cursor)
     cursor.close()
     conn.commit()
     conn.close()
-    return data
 
 
-def add_up(uid: int):
+def next_uid() -> int:
+    global index
+    global up_list
+    if len(up_list) == 0:
+        return 0
+
+    if index+1 > len(up_list):
+        index = 0
+    uid = up_list[index]['uid']
+    index += 1
+    return uid
+
+
+def update_up_list():
+    if len(get_all()) == 0:
+        return
+    global up_list
+    up_list = get_data("select (uid,sub_list) from sub")
+
+
+def add_up(uid: int, name: str):
     """添加up主"""
 
-    script = fr"insert into sub uid values {uid}"
+    script = fr"insert into sub (uid,name) values ({uid},'{name}')"
     return write_data(script)
 
 
@@ -82,12 +91,24 @@ def get_up_name(uid: int) -> list:
     return get_data(script)
 
 
-def get_push_list(uid: int) -> list:
+def get_sub_list(uid: int) -> list:
     """获取推送列表"""
 
-    script = fr"select sub_list from sub where uid = {uid}"
+    script = fr"select (sub_list) from sub where uid = {uid}"
     return get_data(script)
 
 
 def delete_sub(uid: int, qq: int) -> bool:
     return True
+
+
+def get_uid_list() -> list:
+    return get_data("select uid from sub")
+
+
+def update_user(uid: int, name: str):
+    write_data(fr"update sub set name = '{name}' where uid = {uid}")
+
+
+def get_all() -> list:
+    return get_data(fr"select * from sub")

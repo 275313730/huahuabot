@@ -1,11 +1,12 @@
 import asyncio
+from operator import le
 import traceback
 from datetime import datetime, timedelta
 
 from nonebot.log import logger
 
 from bilireq.dynamic import get_user_dynamics
-from ...database import DB
+from ...database import db
 from ...libs.dynamic import Dynamic
 from ...utils import safe_send, scheduler, get_dynamic_screenshot
 
@@ -16,16 +17,14 @@ last_time = {}
 
 @scheduler.scheduled_job("interval", seconds=10, id="dynamic_sched")
 async def dy_sched():
-    """直播推送"""
+    """订阅推送"""
 
-    uid = db.next_uid("dynamic")
+    uid = db.next_uid()
     if not uid:
         return
-    user = db.get_user(uid)
-    assert user is not None
-    name = user['name']
+    up_name = db.get_up_name(uid)[0]
 
-    logger.debug(f"爬取动态 {name}（{uid}）")
+    logger.debug(f"爬取动态 {up_name}（{uid}）")
     dynamics = (await get_user_dynamics(uid)).get("cards", [])  # 获取最近十二条动态
     # config['uid'][uid]['name'] = dynamics[0]['desc']['user_profile']['info']['uname']
     # await update_config(config)
@@ -45,7 +44,7 @@ async def dy_sched():
             and dynamic.time
             > datetime.now().timestamp() - timedelta(minutes=10).seconds
         ):
-            logger.info(f"检测到新动态（{dynamic.id}）：{name}（{uid}）")
+            logger.info(f"检测到新动态（{dynamic.id}）：{up_name}（{uid}）")
             image = None
             for _ in range(3):
                 try:
@@ -59,11 +58,11 @@ async def dy_sched():
                 logger.error("已达到重试上限，将在下个轮询中重新尝试")
             await dynamic.format(image)
 
-            push_list = db.get_push_list(uid, "dynamic")
-            for sets in push_list:
-                await safe_send(
-                    sets.bot_id, sets.type_id, dynamic.message
-                )
+            data = db.get_sub_list(uid)
+            if len(data) > 0:
+                push_list = data[0]
+                for qq in push_list:
+                    await safe_send(1778916839, "private", qq, dynamic.message)
 
             last_time[uid] = dynamic.time
     await DB.update_user(uid, dynamic.name)  # type: ignore
