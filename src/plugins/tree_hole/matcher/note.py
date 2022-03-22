@@ -1,4 +1,3 @@
-from nonebot.adapters.onebot.v11 import Bot
 from nonebot import on_command
 from nonebot.rule import to_me
 from nonebot.adapters.onebot.v11 import PrivateMessageEvent, Bot

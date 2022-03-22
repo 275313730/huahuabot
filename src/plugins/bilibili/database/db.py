@@ -1,13 +1,5 @@
 import os
 import sqlite3
-from typing import Dict, List, Optional
-from webbrowser import get
-
-from nonebot import get_driver
-from nonebot.log import logger
-from tortoise.expressions import Q
-from tortoise.queryset import QuerySet
-
 
 uid_list = {"live": {"list": [], "index": 0},
             "dynamic": {"list": [], "index": 0}}
@@ -49,16 +41,22 @@ def check_tables():
     # 初始数据:
     conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
-    cursor.execute(str('''CREATE TABLE if not exists "sub" (
-	"uid"	INTEGER NOT NULL UNIQUE,
-    "name"  text not null ,
-	"sub_list"	TEXT NOT NULL DEFAULT '[]',
-	PRIMARY KEY("uid"))'''))
+    cursor.execute(
+        str('''CREATE TABLE if not exists "up" 
+        ("uid"	INTEGER NOT NULL UNIQUE,
+        "name"  text not null,
+        "sub_list"	TEXT NOT NULL DEFAULT "[]",
+        PRIMARY KEY("uid"))'''))
     data = list(cursor)
     cursor.close()
     conn.commit()
     conn.close()
     return data
+
+
+def get_all():
+    script = fr"select (uid,name,sub_list) from sub"
+    return get_data(script)
 
 
 def add_up(uid: int):
