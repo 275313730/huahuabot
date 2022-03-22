@@ -42,7 +42,7 @@ def check_tables():
     conn = sqlite3.connect(db_file)
     cursor = conn.cursor()
     cursor.execute(
-        str('''CREATE TABLE if not exists "up" 
+        str('''CREATE TABLE if not exists "sub" 
         ("uid"	INTEGER NOT NULL UNIQUE,
         "name"  text not null,
         "sub_list"	TEXT NOT NULL DEFAULT "[]",
@@ -57,7 +57,7 @@ def get_all():
     return get_data(script)
 
 
-def add_up(uid: int):
+def add_up(uid: int, name: str):
     """添加up主"""
 
     script = fr"insert into sub (uid,name) values ({uid},'{name}')"
@@ -79,7 +79,7 @@ def get_up_name(uid: int) -> list:
 
 
 def get_sub_list(uid: int) -> list:
-    """获取推送列表"""
+    """获取指定uid的推送列表"""
 
     script = fr"select (sub_list) from sub where uid = {uid}"
     return get_data(script)
