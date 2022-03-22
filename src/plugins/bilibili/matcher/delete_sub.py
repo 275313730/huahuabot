@@ -34,5 +34,5 @@ def handle_delete_sub(uid: int, qq: int):
         push_list_str = data[0]
         push_list: list = json.loads(push_list_str)
         push_list.remove(qq)
-        result = db.add_sub(uid, json.dumps(push_list))
+        result = db.modify_sub(uid, json.dumps(push_list))
     return result

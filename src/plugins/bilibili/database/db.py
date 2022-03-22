@@ -2,7 +2,7 @@ import os
 import sqlite3
 
 
-up_list: list = []
+uid_list: list = []
 
 index = 0
 
@@ -52,8 +52,8 @@ def check_tables():
     conn.close()
 
 
-def get_all():
-    script = fr"select (uid,name,sub_list) from sub"
+def get_all() -> list:
+    script = fr"select uid,name,sub_list from sub"
     return get_data(script)
 
 
@@ -64,7 +64,14 @@ def add_up(uid: int, name: str):
     return write_data(script)
 
 
-def add_sub(uid: int, sub_list_str: str) -> bool:
+def delete_up(uid: int):
+    """删除up主"""
+
+    script = fr"delete from sub where uid = {uid}"
+    return write_data(script)
+
+
+def modify_sub(uid: int, sub_list_str: str) -> bool:
     """添加订阅"""
 
     script = fr"update sub set sub_list = '{sub_list_str}' where uid = {uid}"
@@ -81,12 +88,8 @@ def get_up_name(uid: int) -> list:
 def get_sub_list(uid: int) -> list:
     """获取指定uid的推送列表"""
 
-    script = fr"select (sub_list) from sub where uid = {uid}"
+    script = fr"select sub_list from sub where uid = {uid}"
     return get_data(script)
-
-
-def delete_sub(uid: int, qq: int) -> bool:
-    return True
 
 
 def get_uid_list() -> list:
@@ -97,5 +100,15 @@ def update_user(uid: int, name: str):
     write_data(fr"update sub set name = '{name}' where uid = {uid}")
 
 
-def get_all() -> list:
-    return get_data(fr"select * from sub")
+def next_uid() -> int:
+    global uid_list
+    global index
+
+    uid_list = get_uid_list()
+    if len(uid_list) == 0:
+        return -1
+    if index + 1 >= len(uid_list):
+        index = 0
+    else:
+        index += 1
+    return uid_list[index][0]

@@ -1,5 +1,4 @@
 import json
-from loguru import logger
 from nonebot import on_command
 from nonebot.adapters.onebot.v11.event import PrivateMessageEvent
 from nonebot.rule import to_me
@@ -50,11 +49,11 @@ def handle_add_sub(uid: int, name: str, qq: int) -> bool:
     data = db.get_sub_list(uid)
     if len(data) == 0:
         db.add_up(uid, name)
-        result = db.add_sub(uid, f'[{qq}]')
+        result = db.modify_sub(uid, f'[{qq}]')
     else:
         sub_list_str: str = db.get_sub_list(uid)[0]
         sub_list: list = json.loads(sub_list_str)
         sub_list.append(qq)
         sub_list_str = json.dumps(sub_list)
-        result = db.add_sub(uid, sub_list_str)
+        result = db.modify_sub(uid, sub_list_str)
     return result
