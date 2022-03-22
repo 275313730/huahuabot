@@ -9,7 +9,7 @@ _help = on_command("help bilibili", aliases={
 @_help.handle()
 async def _(event: PrivateMessageEvent):
     await _help.finish(f"b站小帮手目前已有的功能如下"
-                       f"\n（UID替换为up主的uid‘）"
+                       f"\n（UID替换为up主的uid）"
                        f"\n/关注 UID"
                        f"\n/取关 UID"
                        f"\n/关注列表")

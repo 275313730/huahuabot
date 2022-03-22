@@ -7,10 +7,6 @@ _help = on_command("help", aliases={"帮助"}, priority=2, block=True)
 
 @_help.handle()
 async def _(event: PrivateMessageEvent):
-<<<<<<< HEAD
-=======
-
->>>>>>> d2a5994fd68b6daf811e09f5962fb772e155d4ea
     await _help.finish(f"这里是滑滑bot，目前已有的功能如下"
                        f"\n（'help'可替换为'帮助‘）"
                        f"\n树洞：/help 树洞"

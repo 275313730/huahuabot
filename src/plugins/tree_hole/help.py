@@ -7,11 +7,7 @@ _help = on_command("help 树洞", aliases={
 
 
 @_help.handle()
-<<<<<<< HEAD
 async def _(event: PrivateMessageEvent):
-=======
-async def _():
->>>>>>> d2a5994fd68b6daf811e09f5962fb772e155d4ea
     await _help.finish(f"树洞目前可以使用的功能有"
                        f"（请将UID改为小纸条编号）"
                        f"\n个人相关："
@@ -35,10 +31,6 @@ async def _():
                        f"\n"
                        f"\n注：1.以上功能只有私聊才有效"
                        f"\n2.为了方便操作，所有指令中的'小纸条'可以省略不输入")
-<<<<<<< HEAD
-
-=======
->>>>>>> d2a5994fd68b6daf811e09f5962fb772e155d4ea
 
 rule = on_command("树洞规则", rule=to_me(), priority=2, block=True)
 

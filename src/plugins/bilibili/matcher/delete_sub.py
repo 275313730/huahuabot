@@ -4,7 +4,7 @@ from nonebot.adapters.onebot.v11.event import MessageEvent
 from nonebot.typing import T_State
 from nonebot.rule import to_me
 
-from ...database import db
+from ..database import db
 
 delete_sub = on_command(
     "取关", aliases={"删除主播"}, rule=to_me(), priority=2, block=True)

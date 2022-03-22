@@ -8,7 +8,7 @@ from nonebot.rule import to_me
 from bilireq.user import get_user_info
 from bilireq.exceptions import ResponseCodeError
 
-from ...database import db
+from ..database import db
 
 add_sub = on_command("关注", aliases={"添加主播"},
                      rule=to_me(), priority=2, block=True)
