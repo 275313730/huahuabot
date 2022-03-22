@@ -4,7 +4,7 @@ from nonebot.adapters.onebot.v11.event import MessageEvent
 from nonebot.typing import T_State
 from nonebot.rule import to_me
 
-from ..database import db
+from ...database import db
 
 delete_sub = on_command(
     "取关", aliases={"删除主播"}, rule=to_me(), priority=2, block=True)
@@ -28,7 +28,7 @@ async def _(event: MessageEvent, state: T_State):
 
 
 def handle_delete_sub(uid: int, qq: int):
-    data = db.get_push_list(uid)
+    data = db.get_sub_list(uid)
     result = False
     if len(data) > 0:
         push_list_str = data[0]

@@ -2,8 +2,12 @@ import json
 from nonebot import on_command
 from nonebot.adapters.onebot.v11.event import MessageEvent
 from nonebot.rule import to_me
+<<<<<<< HEAD:src/plugins/bilibili/matcher/sub_list.py
 
 from ..database import db
+=======
+from ...database import db
+>>>>>>> d2a5994fd68b6daf811e09f5962fb772e155d4ea:src/plugins/bilibili/plugins/matcher/sub_list.py
 
 sub_list = on_command(
     "关注列表", aliases={"主播列表"}, rule=to_me(), priority=2, block=True)
@@ -18,6 +22,7 @@ async def _(event: MessageEvent):
     await sub_list.finish(message)
 
 
+<<<<<<< HEAD:src/plugins/bilibili/matcher/sub_list.py
 def handle_sub_list(qq: int) -> str:
     data = db.get_all()
 
@@ -29,5 +34,14 @@ def handle_sub_list(qq: int) -> str:
         if qq in _sub_list:
             message += (
                 f"{name}（{uid}）"
+=======
+def handle_sub_list(qq: int):
+    message = "关注列表\n\n"
+    subs = db.get_all()
+    for sub in subs:
+        if qq in sub[2]:
+            message += (
+                f"{sub[1]}（{sub[0]}）"
+>>>>>>> d2a5994fd68b6daf811e09f5962fb772e155d4ea:src/plugins/bilibili/plugins/matcher/sub_list.py
             )
     return message

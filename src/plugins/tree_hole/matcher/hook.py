@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 from nonebot.internal.matcher import Matcher, matchers
 from nonebot.adapters.onebot.v11 import PrivateMessageEvent
 from nonebot.message import run_preprocessor
+=======
+from nonebot.internal.matcher import Matcher
+from nonebot.adapters.onebot.v11 import PrivateMessageEvent
+from nonebot.message import run_preprocessor
+from nonebot.matcher import matchers
+>>>>>>> d2a5994fd68b6daf811e09f5962fb772e155d4ea
 
 from ..handle import user
 
@@ -22,7 +29,12 @@ async def _(matcher: Matcher, event: PrivateMessageEvent):
     qq = event.user_id
     exist = user.check_qq_exist(qq)
     ban = user.check_qq_ban(qq)
+<<<<<<< HEAD
 
+=======
+    if(matcher.plugin_name and not matcher.plugin_name.startswith("tree_hole")):
+        return
+>>>>>>> d2a5994fd68b6daf811e09f5962fb772e155d4ea
     if not exist:
         await matcher.finish("加入树洞才能使用其他指令哦")
     if ban:
