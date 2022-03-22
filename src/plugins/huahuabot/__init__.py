@@ -11,7 +11,8 @@ async def _(event: PrivateMessageEvent):
                        f"\n（'help'可替换为'帮助‘）"
                        f"\n树洞：/help 树洞"
                        f"\nb站小帮手：/help bilibli，/help b站"
-                       f"\nbot反馈：/反馈")
+                       f"\nbot反馈：/反馈"
+                       f"\n注：bot每天凌晨4点会重启，请注意使用时避开重启时间，以免数据丢失")
 
 
 feedback = on_command("反馈", rule=to_me(), priority=2, block=True)

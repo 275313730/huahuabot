@@ -51,4 +51,4 @@
 
 - [Nonebot2](https://github.com/nonebot/nonebot2)
 - [go-cqhttp](https://github.com/Mrs4s/go-cqhttp)
-- [HarukaBot](https://github.com/SK-415/HarukaBot)
+- [HarukaBot](https://github.com/SK-415/HarukaBot)：感谢 HarukaBot 提供的思路
