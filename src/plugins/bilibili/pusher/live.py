@@ -33,11 +33,11 @@ async def live(sub_list: list, uid: int):
             logger.info(f"检测到开播：{name}（{uid}）")
 
             live_msg = (
-                f"{name} 正在直播：\n{title}\n" + f"\n{url}"
+                f"{name} 正在直播：\n{title}" + f"\n{url}"
             )
         else:  # 下播
             logger.info(f"检测到下播：{name}（{uid}）")
-            live_msg = f"{name} 下播了"
+            live_msg = f"{name}({uid}) 下播了"
 
         # bot发送消息给订阅者
         for user_id in sub_list:

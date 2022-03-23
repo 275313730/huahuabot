@@ -34,11 +34,9 @@ async def _(event: PrivateMessageEvent):
     else:
         await add_sub.finish("是不是忘了输入uid捏")
 
-    data = db.get_up_name(uid)
-    if len(data) > 0:
-        name = data[0][0]
+    name = db.get_up_name(uid)
 
-    if not name:
+    if name == "":
         try:
             user = User(uid)
             res = await user.get_user_info()
@@ -77,16 +75,12 @@ def user_sub_num(user_id: int) -> int:
 
 
 def handle_add_sub(uid: int, name: str, qq: int) -> bool:
-    result = False
-    data = db.get_sub_list(uid)
-    if data is None:
+    sub_list = db.get_sub_list(uid)
+    if len(sub_list) == 0:
         db.add_up(uid, name)
-        result = db.modify_sub(uid, f'[{qq}]')
+        return db.modify_sub(uid, f'[{qq}]')
     else:
-        data = db.get_sub_list(uid)
-        sub_list_str: str = db.get_sub_list(uid)[0][0]
-        sub_list: list = json.loads(sub_list_str)
+        if qq in sub_list:
+            return False
         sub_list.append(qq)
-        sub_list_str = json.dumps(sub_list)
-        result = db.modify_sub(uid, sub_list_str)
-    return result
+        return db.modify_sub(uid, json.dumps(sub_list))
