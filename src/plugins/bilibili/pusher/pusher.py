@@ -1,4 +1,3 @@
-import json
 from nonebot.log import logger
 
 from .live import live
