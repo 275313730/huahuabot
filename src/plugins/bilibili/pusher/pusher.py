@@ -1,3 +1,4 @@
+import asyncio
 from nonebot.log import logger
 
 from .live import live
@@ -22,8 +23,8 @@ def update_uid_list():
     uid_list = db.get_uid_list()
 
 
-@scheduler.scheduled_job("interval", seconds=5, id="pusher")
-async def _():
+@scheduler.scheduled_job("interval", seconds=5, id="puhser_sched")
+async def puhser_sched():
     """推送"""
 
     global uid_list, index
