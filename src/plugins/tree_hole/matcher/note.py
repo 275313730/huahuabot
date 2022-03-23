@@ -142,20 +142,20 @@ async def _(state: T_State):
 
 @report_note.got("description", prompt="请输入具体描述")
 async def _(bot: Bot, state: T_State, event: PrivateMessageEvent):
-    qq = event.user_id
-    uid = int(str(state['uid']))
-    description = str(state['description'])
+    reporter = event.user_id
+    note_uid = int(str(state['uid']))
+    report_description = str(state['description'])
 
-    status = note.report_note(qq, uid, description)
+    status = note.report_note(reporter, note_uid, report_description)
     if status:
-        note_str = note.get_note_by_uid(uid)
-        qq = user.get_qq_by_note(uid)
+        note_str = note.get_note_by_uid(note_uid)
+        note_owner = user.get_qq_by_note(note_uid)
         await bot.send_private_msg(user_id=275313730, message=f"叮咚！有一个小纸条被举报"
-                                                              f"\n被举报人qq：{qq}"
+                                                              f"\n被举报人qq：{note_owner}"
                                                               f"\n{note_str}"
                                                               f"\n————————————————————————"
-                                                              f"\n举报人qq：{qq}"
-                                                              f"\n举报描述：{description}")
+                                                              f"\n举报人qq：{reporter}"
+                                                              f"\n举报描述：{report_description}")
         await report_note.finish("举报成功")
     else:
         await report_note.finish("举报失败")

@@ -1,6 +1,7 @@
 from nonebot import on_command
-from nonebot.adapters.onebot.v11 import PrivateMessageEvent
+from nonebot.adapters.onebot.v11 import PrivateMessageEvent, Bot
 from nonebot.rule import to_me
+from nonebot.typing import T_State
 
 _help = on_command("help", aliases={"帮助"}, priority=2, block=True)
 
@@ -19,5 +20,11 @@ feedback = on_command("反馈", rule=to_me(), priority=2, block=True)
 
 
 @feedback.got("description", prompt="请输入反馈内容")
-async def _():
-    pass
+async def _(bot: Bot, event: PrivateMessageEvent, state: T_State):
+    qq = event.user_id
+    description = str(state['description'])
+
+    await bot.send_private_msg(user_id=275313730, message=f"叮咚！有一个反馈来了"
+                               f"\n反馈人qq：{qq}"
+                               f"\n反馈内容：{description}")
+    await feedback.finish("反馈成功")
