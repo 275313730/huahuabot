@@ -2,7 +2,6 @@ from nonebot.log import logger
 from bilibili_api.user import User
 
 from . import utils
-from ..database import db
 
 
 status = {}

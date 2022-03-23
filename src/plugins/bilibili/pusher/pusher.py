@@ -44,12 +44,12 @@ async def _():
     if uid == -1:
         return
 
-    # 获取UP的订阅列表
-    sub_list_str = db.get_sub_list(uid)[0][0]
-    sub_list = json.loads(sub_list_str)
+    # 获取UP的信息
+    name = db.get_up_name(uid)
+    sub_list = db.get_sub_list(uid)
 
     # 自动删除无人关注的UP
-    if len(sub_list) == 0:
+    if sub_list is not None and len(sub_list) == 0:
         db.delete_up(uid)
         logger.info(f"UID:{uid}已无人关注，自动删除")
         return
@@ -57,6 +57,6 @@ async def _():
     logger.info(f"目前爬取uid:{uid}")
 
     await live(sub_list, uid)
-    await dynamic(sub_list, uid)
+    await dynamic(sub_list, uid, name)
 
 scheduler.start()

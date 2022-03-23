@@ -41,12 +41,9 @@ async def _(event: MessageEvent, state: T_State):
 
 
 def handle_delete_sub(uid: int, qq: int):
-    data = db.get_sub_list(uid)
-    logger.debug(data)
+    sub_list = db.get_sub_list(uid)
     result = False
-    if len(data) > 0:
-        push_list_str = data[0][0]
-        push_list: list = json.loads(push_list_str)
-        push_list.remove(qq)
-        result = db.modify_sub(uid, json.dumps(push_list))
+    if sub_list is not None:
+        sub_list.remove(qq)
+        result = db.modify_sub(uid, json.dumps(sub_list))
     return result

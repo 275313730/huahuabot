@@ -2,6 +2,7 @@ import json
 from nonebot import on_command
 from nonebot.adapters.onebot.v11.event import PrivateMessageEvent
 from nonebot.rule import to_me
+from nonebot.log import logger
 
 from bilibili_api.user import User
 from bilibili_api.exceptions import ResponseCodeException
@@ -16,6 +17,9 @@ add_sub.__doc__ = """关注 UID"""
 @add_sub.handle()
 async def _(event: PrivateMessageEvent):
     """根据UID订阅UP主"""
+
+    if user_sub_num(event.user_id) >= 5:
+        await add_sub.finish("关注up数量已达到最大值请先取关主播或等数量开放")
 
     uid: int = -1
     name: str = ""
@@ -60,10 +64,22 @@ async def _(event: PrivateMessageEvent):
     await add_sub.finish(f"{name}（{uid}）已经关注了")
 
 
+def user_sub_num(user_id: int) -> int:
+    num = 0
+
+    up_list = db.get_all()
+    if len(up_list) > 0:
+        for up in up_list:
+            sub_list = up[2]
+            if sub_list.find(str(user_id)) > -1:
+                num += 1
+    return num
+
+
 def handle_add_sub(uid: int, name: str, qq: int) -> bool:
     result = False
     data = db.get_sub_list(uid)
-    if len(data) == 0:
+    if data is None:
         db.add_up(uid, name)
         result = db.modify_sub(uid, f'[{qq}]')
     else:

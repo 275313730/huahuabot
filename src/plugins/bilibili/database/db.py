@@ -1,5 +1,7 @@
+import json
 import os
 import sqlite3
+from tkinter.messagebox import NO
 
 
 def get_database_path() -> str:
@@ -77,14 +79,18 @@ def get_up_name(uid: int) -> list:
     """获取up昵称"""
 
     script = fr"select name from sub where uid = {uid}"
-    return get_data(script)
+    return get_data(script)[0][0]
 
 
-def get_sub_list(uid: int) -> list:
+def get_sub_list(uid: int) -> list or None:
     """获取指定uid的推送列表"""
 
     script = fr"select sub_list from sub where uid = {uid}"
-    return get_data(script)
+    data = get_data(script)
+    if len(data) > 0:
+        sub_list = json.loads(data[0][0])
+        return sub_list
+    return None
 
 
 def get_uid_list() -> list:
