@@ -2,11 +2,6 @@ import os
 import sqlite3
 
 
-uid_list: list = []
-
-index = 0
-
-
 def get_database_path() -> str:
     return os.path.join(os.getcwd(), 'data/bilibili.db')
 
@@ -98,17 +93,3 @@ def get_uid_list() -> list:
 
 def update_user(uid: int, name: str):
     write_data(fr"update sub set name = '{name}' where uid = {uid}")
-
-
-def next_uid() -> int:
-    global uid_list
-    global index
-
-    uid_list = get_uid_list()
-    if len(uid_list) == 0:
-        return -1
-    if index + 1 >= len(uid_list):
-        index = 0
-    else:
-        index += 1
-    return uid_list[index][0]
