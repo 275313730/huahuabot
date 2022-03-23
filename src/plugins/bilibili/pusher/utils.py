@@ -12,3 +12,9 @@ async def safe_send(bot_id: int, user_id: int, message: str):
         return
 
     return await bot.call_api(api="send_msg", message=message, user_id=user_id)
+
+
+def next_uid(uid_list: list, index: int) -> int:
+    if len(uid_list) == 0:
+        return -1
+    return uid_list[index][0]

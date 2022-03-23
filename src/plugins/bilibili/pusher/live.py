@@ -1,40 +1,15 @@
-import json
-from operator import truediv
-from re import T
 from nonebot.log import logger
 from bilibili_api.user import User
 
 from . import utils
 from ..database import db
 
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-
 
 status = {}
 
-scheduler = AsyncIOScheduler()
 
-
-@scheduler.scheduled_job("interval", seconds=10, id="live_sched")
-async def job():
+async def live(sub_list: list, uid: int):
     """直播推送"""
-
-    uid = db.next_uid()
-
-    if uid == -1:  # 订阅为空
-        return
-
-    # 获取UP的订阅列表
-    sub_list_str = db.get_sub_list(uid)[0][0]
-    sub_list = json.loads(sub_list_str)
-
-    # 自动删除无人关注的UP
-    if len(sub_list) == 0:
-        db.delete_up(uid)
-        logger.info(f"UID:{uid}已无人关注，自动删除")
-        return
-
-    logger.info(f"爬取直播列表，目前爬取uid:{uid}")
 
     # 获取直播间信息
     up_user = User(uid)
@@ -69,8 +44,4 @@ async def job():
         for user_id in sub_list:
             await utils.safe_send(bot_id=1778916839, user_id=user_id, message=live_msg)
 
-    db.update_user(int(uid), name)
     status[uid] = new_status
-
-
-scheduler.start()
