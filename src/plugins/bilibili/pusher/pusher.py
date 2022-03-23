@@ -23,8 +23,8 @@ def update_uid_list():
     uid_list = db.get_uid_list()
 
 
-@scheduler.scheduled_job("interval", seconds=10, id="live_sched")
-async def job():
+@scheduler.scheduled_job("interval", seconds=5, id="pusher")
+async def _():
     """推送"""
 
     global uid_list, index
