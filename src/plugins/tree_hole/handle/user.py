@@ -1,3 +1,4 @@
+from nonebot.log import logger
 from datetime import datetime
 from .. import database as db
 
@@ -6,7 +7,9 @@ def join_tree_hole(qq: int, nickname: str) -> bool:
     """加入树洞"""
 
     stamp = datetime.now()
+    logger.debug(stamp)
     time = stamp.strftime("%y/%m/%d")
+    logger.debug(time)
     return db.user.create_user(qq, nickname, time)
 
 
@@ -44,9 +47,9 @@ def check_qq_ban(qq: int) -> bool:
     users = db.user.get_user(qq, 'ban_end_time')
     if len(users) > 0:
         user = users[0]
-        ban_end_time = datetime.strptime(user[0], '%Y/%m/%d')
+        ban_end_time = datetime.strptime(user[0], '%y/%m/%d')
         days = (now - ban_end_time).days
-        status = (days <= 0)
+        status = (days > 0)
     return status
 
 

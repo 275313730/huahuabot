@@ -31,7 +31,6 @@ async def _():
 
     # 判断索引是否达到最大值
     if index + 1 >= len(uid_list):
-        logger.info("当前列表爬取完毕，更新up列表")
         index = 0
         update_uid_list()
     else:
@@ -53,8 +52,6 @@ async def _():
         db.delete_up(uid)
         logger.info(f"UID:{uid}已无人关注，自动删除")
         return
-
-    logger.info(f"目前爬取uid:{uid}")
 
     await live(sub_list, uid)
     await dynamic(sub_list, uid, name)
