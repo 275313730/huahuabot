@@ -1,9 +1,10 @@
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import PrivateMessageEvent
 from nonebot.rule import to_me
+from ..config import BILIBILI_PRIORITY
 
 bili_help = on_command("help bilibili", aliases={
-    "帮助 bilibili", "help b站", "帮助 b站"}, rule=to_me(), priority=2, block=True)
+    "帮助 bilibili", "help b站", "帮助 b站"}, rule=to_me(), priority=BILIBILI_PRIORITY, block=True)
 
 
 @bili_help.handle()

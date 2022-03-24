@@ -5,10 +5,11 @@ from nonebot.typing import T_State
 from nonebot.rule import to_me
 from nonebot.log import logger
 
+from ...config import BILIBILI_PRIORITY
 from ..database import db
 
 delete_sub = on_command(
-    "取关", aliases={"删除主播"}, rule=to_me(), priority=2, block=True)
+    "取关", aliases={"删除主播"}, rule=to_me(), priority=BILIBILI_PRIORITY, block=True)
 delete_sub.__doc__ = """取关 UID"""
 
 

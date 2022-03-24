@@ -1,7 +1,7 @@
 from nonebot import on_command
 from nonebot.rule import to_me
 from nonebot.adapters.onebot.v11 import PrivateMessageEvent
-
+from ..config import TREE_HOLE_PRIORITY
 
 rule_str = str(f"欢迎加入树洞，以下为树洞的不完全使用指南："
                f"\n1.请勿发布任何违反法律的信息"
@@ -10,7 +10,7 @@ rule_str = str(f"欢迎加入树洞，以下为树洞的不完全使用指南：
                f"\n——最后，祝你使用愉快")
 
 th_help = on_command("help 树洞", aliases={
-    "帮助 树洞"}, rule=to_me(), priority=2, block=True)
+    "帮助 树洞"}, rule=to_me(), priority=TREE_HOLE_PRIORITY, block=True)
 
 
 @th_help.handle()
@@ -35,7 +35,8 @@ async def _(event: PrivateMessageEvent):
                              f"\n注：1.以上功能只有私聊才有效"
                              f"\n2.为了方便操作，所有指令中的'小纸条'可以省略不输入"))
 
-rule = on_command("树洞规则", rule=to_me(), priority=2, block=True)
+rule = on_command("树洞规则", rule=to_me(),
+                  priority=TREE_HOLE_PRIORITY, block=True)
 
 
 @rule.handle()

@@ -7,10 +7,11 @@ from nonebot.log import logger
 from bilibili_api.user import User
 from bilibili_api.exceptions import ResponseCodeException
 
+from ...config import BILIBILI_PRIORITY
 from ..database import db
 
 add_sub = on_command("关注", aliases={"添加主播"},
-                     rule=to_me(), priority=2, block=True)
+                     rule=to_me(), priority=BILIBILI_PRIORITY, block=True)
 add_sub.__doc__ = """关注 UID"""
 
 
