@@ -5,7 +5,7 @@ from nonebot.exception import IgnoredException
 
 from ..handle import user
 
-ignore_cmds = ['/help 树洞', '/帮助 树洞', '/加入树洞']
+ignore_cmds = ['/help', '/帮助', '/加入树洞']
 
 
 @run_preprocessor
@@ -14,14 +14,14 @@ async def _(bot: Bot, matcher: Matcher, event: PrivateMessageEvent):
     if matcher.plugin_name and not matcher.plugin_name.startswith("tree_hole"):
         return
 
-    # 忽略prompt
     args = str(event.get_message())
+
+    # 忽略prompt
     if not args.startswith("/"):
         return
 
-    # 忽略特殊指令
-    arg = str(event.get_message())
-    if arg in ignore_cmds:
+    # 忽略help和加入树洞
+    if args.startswith('/help') or args.startswith('/帮助') or args.startswith('/加入树洞'):
         return
 
     # 检查用户状态
