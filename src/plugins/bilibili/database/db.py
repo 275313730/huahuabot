@@ -1,7 +1,12 @@
 import json
 import os
 import sqlite3
-from tkinter.messagebox import NO
+
+
+def check_database_folder():
+    folder_path = os.path.join(os.getcwd(), 'data')
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
 
 
 def get_database_path() -> str:

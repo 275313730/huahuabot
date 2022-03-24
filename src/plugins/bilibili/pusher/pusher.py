@@ -1,5 +1,5 @@
-import json
 from nonebot.log import logger
+from nonebot import require
 
 from .live import live
 from .dynamic import dynamic
@@ -7,7 +7,9 @@ from .dynamic import dynamic
 from . import utils
 from ..database import db
 
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+scheduler = require("nonebot_plugin_apscheduler")
+assert scheduler is not None
+scheduler = scheduler.scheduler
 
 
 status = {}
@@ -15,16 +17,14 @@ status = {}
 uid_list: list = []
 index = 0
 
-scheduler = AsyncIOScheduler()
-
 
 def update_uid_list():
     global uid_list
     uid_list = db.get_uid_list()
 
 
-@scheduler.scheduled_job("interval", seconds=5, id="pusher")
-async def _():
+@scheduler.scheduled_job("interval", seconds=5, id="pusher_sched")
+async def pusher_sched():
     """推送"""
 
     global uid_list, index
@@ -55,5 +55,3 @@ async def _():
 
     await live(sub_list, uid)
     await dynamic(sub_list, uid, name)
-
-scheduler.start()

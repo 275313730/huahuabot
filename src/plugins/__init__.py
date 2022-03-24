@@ -3,6 +3,7 @@ from nonebot.adapters.onebot.v11 import PrivateMessageEvent, Bot
 from nonebot.rule import to_me
 from nonebot.typing import T_State
 
+
 _help = on_command("help", aliases={"帮助"}, priority=2, block=True)
 
 
