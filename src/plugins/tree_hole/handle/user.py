@@ -49,7 +49,7 @@ def check_qq_ban(qq: int) -> bool:
         user = users[0]
         ban_end_time = datetime.strptime(user[0], '%y/%m/%d')
         days = (now - ban_end_time).days
-        status = (days > 0)
+        status = (days < 0)
     return status
 
 
