@@ -196,7 +196,7 @@ def remove_note_from_favorites(qq: int, uid: int) -> bool:
         user = users[0]
         favorites: list = json.loads(user[0])
         if uid in favorites:
-            favorites.append(uid)
+            favorites.remove(uid)
             status = db.user.update_user(
                 qq, 'favorites', json.dumps(favorites))
     return status

@@ -20,8 +20,8 @@ async def _(bot: Bot, matcher: Matcher, event: PrivateMessageEvent):
         return
 
     # 忽略特殊指令
-    args = str(event.get_message()).split(" ")
-    if args[0] in ignore_cmds:
+    arg = str(event.get_message())
+    if arg in ignore_cmds:
         return
 
     # 检查用户状态
