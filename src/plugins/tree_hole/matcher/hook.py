@@ -3,6 +3,7 @@ from nonebot.adapters.onebot.v11 import PrivateMessageEvent, Bot
 from nonebot.message import run_preprocessor
 from nonebot.exception import IgnoredException
 
+from ...config import TREE_HOLE_PRIORITY
 from ..handle import user
 
 ignore_cmds = ['/help', '/帮助', '/加入树洞']
@@ -11,7 +12,7 @@ ignore_cmds = ['/help', '/帮助', '/加入树洞']
 @run_preprocessor
 async def _(bot: Bot, matcher: Matcher, event: PrivateMessageEvent):
     # 只处理树洞相关matcher
-    if matcher.plugin_name and not matcher.plugin_name.startswith("tree_hole"):
+    if matcher.priority and matcher.priority != TREE_HOLE_PRIORITY:
         return
 
     args = str(event.get_message())
