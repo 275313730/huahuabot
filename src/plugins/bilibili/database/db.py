@@ -80,14 +80,18 @@ def modify_sub(uid: int, sub_list_str: str) -> bool:
     return write_data(script)
 
 
-def get_up_name(uid: int) -> list:
+def get_up_name(uid: int) -> str:
     """获取up昵称"""
 
     script = fr"select name from sub where uid = {uid}"
-    return get_data(script)[0][0]
+    data = get_data(script)
+    if len(data) > 0:
+        name = data[0][0]
+        return name
+    return ""
 
 
-def get_sub_list(uid: int) -> list or None:
+def get_sub_list(uid: int) -> list:
     """获取指定uid的推送列表"""
 
     script = fr"select sub_list from sub where uid = {uid}"
@@ -95,7 +99,7 @@ def get_sub_list(uid: int) -> list or None:
     if len(data) > 0:
         sub_list = json.loads(data[0][0])
         return sub_list
-    return None
+    return []
 
 
 def get_uid_list() -> list:

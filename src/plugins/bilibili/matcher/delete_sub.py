@@ -28,9 +28,8 @@ async def _(event: MessageEvent, state: T_State):
     else:
         await delete_sub.finish("是不是忘了输入uid捏")
 
-    data = db.get_up_name(uid)
-    if len(data) > 0:
-        name = data[0][0]
+    name = db.get_up_name(uid)
+    if name != "":
         result = handle_delete_sub(uid, event.user_id)
 
         if result:
@@ -43,7 +42,7 @@ async def _(event: MessageEvent, state: T_State):
 def handle_delete_sub(uid: int, qq: int):
     sub_list = db.get_sub_list(uid)
     result = False
-    if sub_list is not None:
+    if len(sub_list) > 0:
         sub_list.remove(qq)
         result = db.modify_sub(uid, json.dumps(sub_list))
     return result

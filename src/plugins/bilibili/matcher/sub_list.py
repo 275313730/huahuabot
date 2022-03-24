@@ -14,20 +14,15 @@ sub_list.__doc__ = """关注列表"""
 async def _(event: MessageEvent):
     """发送当前位置的订阅列表"""
 
-    message = handle_sub_list(event.user_id)
-    await sub_list.finish(message)
-
-
-def handle_sub_list(qq: int) -> str:
     data = db.get_all()
 
-    message = "关注列表\n\n"
+    message = "关注列表:"
     for up in data:
         uid = up[0]
         name = up[1]
         _sub_list = json.loads(up[2])
-        if qq in _sub_list:
+        if event.user_id in _sub_list:
             message += (
-                f"{name}（{uid}）"
+                f"\n{name}（{uid}）"
             )
-    return message
+    await sub_list.finish(message)
