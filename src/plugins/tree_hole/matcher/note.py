@@ -51,11 +51,8 @@ async def _(event: PrivateMessageEvent):
         await add_note_to_favorites.finish("小纸条编号没有填写哦")
     uid = int(args[1])
     qq = event.user_id
-    status = note.add_note_to_favorites(qq, uid)
-    if status:
-        await add_note_to_favorites.finish("收藏成功")
-    else:
-        await add_note_to_favorites.finish("收藏失败，可能已经收藏了")
+    msg = note.add_note_to_favorites(qq, uid)
+    await add_note_to_favorites.finish(msg)
 
 
 remove_note_from_favorites = on_command(
@@ -75,6 +72,18 @@ async def _(event: PrivateMessageEvent):
     else:
         await remove_note_from_favorites.finish("取消收藏失败，可能没有收藏过哦")
 
+my_favorites = on_command("我的收藏", rule=to_me(), priority=2, block=True)
+
+
+@my_favorites.handle()
+async def _(event: PrivateMessageEvent):
+    qq = event.user_id
+
+    favorites_str = user.get_my_favorites(qq)
+    if favorites_str != "":
+        await my_favorites.finish(favorites_str)
+    else:
+        await my_favorites.finish("暂无收藏")
 
 my_notes = on_command(
     "我的小纸条", aliases={"我的"}, rule=to_me(), priority=2, block=True)
@@ -86,9 +95,9 @@ async def _(event: PrivateMessageEvent):
 
     note_str = note.get_my_notes(qq)
     if note_str != "":
-        await random_note.finish(note_str)
+        await my_notes.finish(note_str)
     else:
-        await random_note.finish("暂无小纸条")
+        await my_notes.finish("你还没有投递过小纸条哦")
 
 
 delete_note = on_command(

@@ -5,7 +5,7 @@ from nonebot.exception import IgnoredException
 
 from ..handle import user
 
-ignore_cmds = ['/help', '/帮助', '/加入树洞']
+ignore_cmds = ['/help 树洞', '/帮助 树洞', '/加入树洞']
 
 
 @run_preprocessor
