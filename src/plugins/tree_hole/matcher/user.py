@@ -2,11 +2,12 @@ from nonebot import on_command
 from nonebot.rule import to_me
 from nonebot.adapters.onebot.v11 import PrivateMessageEvent
 from nonebot.typing import T_State
-
+from ...config import TREE_HOLE_PRIORITY
 from ..handle import user
 from ..help import rule_str
 
-add_user = on_command("加入树洞", rule=to_me(), priority=2, block=True)
+add_user = on_command("加入树洞", rule=to_me(),
+                      priority=TREE_HOLE_PRIORITY, block=True)
 
 
 @add_user.handle()
@@ -29,7 +30,8 @@ async def _(state: T_State, event: PrivateMessageEvent):
         await add_user.finish("加入树洞失败")
 
 
-modify_nickname = on_command("修改昵称", rule=to_me(), priority=2, block=True)
+modify_nickname = on_command(
+    "修改昵称", rule=to_me(), priority=TREE_HOLE_PRIORITY, block=True)
 
 
 @modify_nickname.got("nickname", prompt="请输入要修改的昵称")

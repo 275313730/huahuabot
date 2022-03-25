@@ -3,10 +3,11 @@ from nonebot.adapters.onebot.v11 import PrivateMessageEvent
 from nonebot.permission import SUPERUSER
 from nonebot.rule import to_me
 from nonebot.typing import T_State
-
+from ...config import TREE_HOLE_PRIORITY
 from ..handle import user, admin, note
 
-ban_user = on_command("禁用用户", rule=to_me(), priority=1, block=True, permission=SUPERUSER)
+ban_user = on_command("禁用用户", rule=to_me(), priority=TREE_HOLE_PRIORITY,
+                      block=True, permission=SUPERUSER)
 
 
 @ban_user.got("qq", prompt="请输入用户qq")
@@ -30,7 +31,8 @@ async def _(state: T_State):
         await ban_user.finish("禁用失败")
 
 
-check_note_reports = on_command("查看举报", rule=to_me(), priority=1, block=True, permission=SUPERUSER)
+check_note_reports = on_command(
+    "查看举报", rule=to_me(), priority=TREE_HOLE_PRIORITY, block=True, permission=SUPERUSER)
 
 
 @check_note_reports.handle()

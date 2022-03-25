@@ -5,6 +5,9 @@
 # test
 test.json
 
+# pycharm
+.idea
+
 # database
 data
 

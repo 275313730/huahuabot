@@ -166,21 +166,23 @@ def get_note_reports_by_uid(uid: int) -> str:
     return reports_str
 
 
-def add_note_to_favorites(qq: int, uid: int) -> bool:
+def add_note_to_favorites(qq: int, uid: int) -> str:
     status = False
 
     if not check_note_exist(uid):
-        return status
+        return "小纸条不存在"
 
     users = db.user.get_user(qq, 'favorites')
     if len(users) > 0:
         user = users[0]
         favorites: list = json.loads(user[0])
         if uid in favorites:
-            return status
+            return "已经收藏过了"
         favorites.append(uid)
         status = db.user.update_user(qq, 'favorites', json.dumps(favorites))
-    return status
+        if status:
+            return "收藏成功"
+    return "收藏失败，原因未知，请向开发者反馈"
 
 
 def remove_note_from_favorites(qq: int, uid: int) -> bool:
@@ -194,7 +196,7 @@ def remove_note_from_favorites(qq: int, uid: int) -> bool:
         user = users[0]
         favorites: list = json.loads(user[0])
         if uid in favorites:
-            favorites.append(uid)
+            favorites.remove(uid)
             status = db.user.update_user(
                 qq, 'favorites', json.dumps(favorites))
     return status

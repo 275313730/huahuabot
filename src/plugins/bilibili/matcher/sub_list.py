@@ -3,10 +3,11 @@ from nonebot import on_command
 from nonebot.adapters.onebot.v11.event import MessageEvent
 from nonebot.rule import to_me
 
+from ...config import BILIBILI_PRIORITY
 from ..database import db
 
 sub_list = on_command(
-    "关注列表", aliases={"主播列表"}, rule=to_me(), priority=2, block=True)
+    "关注列表", aliases={"主播列表"}, rule=to_me(), priority=BILIBILI_PRIORITY, block=True)
 sub_list.__doc__ = """关注列表"""
 
 

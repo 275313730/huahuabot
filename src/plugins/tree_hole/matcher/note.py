@@ -2,11 +2,11 @@ from nonebot import on_command
 from nonebot.rule import to_me
 from nonebot.adapters.onebot.v11 import PrivateMessageEvent, Bot
 from nonebot.typing import T_State
-
+from ...config import TREE_HOLE_PRIORITY
 from ..handle import user, note
 
 add_note = on_command(
-    "投递小纸条", aliases={"投递"}, rule=to_me(), priority=2, block=True)
+    "投递小纸条", aliases={"投递"}, rule=to_me(), priority=TREE_HOLE_PRIORITY, block=True)
 
 
 @add_note.got("content", prompt="随便写点什么都可以哦")
@@ -26,7 +26,7 @@ async def _(state: T_State, event: PrivateMessageEvent):
 
 
 random_note = on_command(
-    "捡取小纸条", aliases={"捡取"}, rule=to_me(), priority=2, block=True)
+    "捡取小纸条", aliases={"捡取"}, rule=to_me(), priority=TREE_HOLE_PRIORITY, block=True)
 
 
 @random_note.handle()
@@ -51,15 +51,12 @@ async def _(event: PrivateMessageEvent):
         await add_note_to_favorites.finish("小纸条编号没有填写哦")
     uid = int(args[1])
     qq = event.user_id
-    status = note.add_note_to_favorites(qq, uid)
-    if status:
-        await add_note_to_favorites.finish("收藏成功")
-    else:
-        await add_note_to_favorites.finish("收藏失败，可能已经收藏了")
+    msg = note.add_note_to_favorites(qq, uid)
+    await add_note_to_favorites.finish(msg)
 
 
 remove_note_from_favorites = on_command(
-    "取消收藏小纸条", aliases={"取消收藏"}, rule=to_me(), priority=2, block=True)
+    "取消收藏小纸条", aliases={"取消收藏"}, rule=to_me(), priority=TREE_HOLE_PRIORITY, block=True)
 
 
 @remove_note_from_favorites.handle()
@@ -75,9 +72,22 @@ async def _(event: PrivateMessageEvent):
     else:
         await remove_note_from_favorites.finish("取消收藏失败，可能没有收藏过哦")
 
+my_favorites = on_command("我的收藏", rule=to_me(),
+                          priority=TREE_HOLE_PRIORITY, block=True)
+
+
+@my_favorites.handle()
+async def _(event: PrivateMessageEvent):
+    qq = event.user_id
+
+    favorites_str = user.get_my_favorites(qq)
+    if favorites_str != "":
+        await my_favorites.finish(favorites_str)
+    else:
+        await my_favorites.finish("暂无收藏")
 
 my_notes = on_command(
-    "我的小纸条", aliases={"我的"}, rule=to_me(), priority=2, block=True)
+    "我的小纸条", aliases={"我的"}, rule=to_me(), priority=TREE_HOLE_PRIORITY, block=True)
 
 
 @my_notes.handle()
@@ -86,13 +96,13 @@ async def _(event: PrivateMessageEvent):
 
     note_str = note.get_my_notes(qq)
     if note_str != "":
-        await random_note.finish(note_str)
+        await my_notes.finish(note_str)
     else:
-        await random_note.finish("暂无小纸条")
+        await my_notes.finish("你还没有投递过小纸条哦")
 
 
 delete_note = on_command(
-    "删除小纸条", aliases={"删除"}, rule=to_me(), priority=2, block=True)
+    "删除小纸条", aliases={"删除"}, rule=to_me(), priority=TREE_HOLE_PRIORITY, block=True)
 
 
 @delete_note.got("uid", prompt="请输入小纸条编号")
@@ -130,7 +140,7 @@ async def _(state: T_State, event: PrivateMessageEvent):
 
 
 report_note = on_command(
-    "举报小纸条", aliases={"举报"}, rule=to_me(), priority=2, block=True)
+    "举报小纸条", aliases={"举报"}, rule=to_me(), priority=TREE_HOLE_PRIORITY, block=True)
 
 
 @report_note.got("uid", prompt="请输入小纸条编号")
