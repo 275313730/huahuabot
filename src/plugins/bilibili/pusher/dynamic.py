@@ -1,7 +1,6 @@
 from nonebot.log import logger
 from bilibili_api.user import User
 
-
 from . import utils
 
 
@@ -31,10 +30,10 @@ async def dynamic(sub_list: list, uid: int, name: str):
         return
 
     if (last_timestamp > last_time[uid]):
-        dynamic_url = last_dynamic['desc']['dynamic_id']
+        dynamic_id = last_dynamic['desc']['dynamic_id']
 
         dynamic_msg = str(f"{name}（{uid}）发布了新动态"
-                          f"\n动态链接：https://t.bilibili.com/{dynamic_url}")
+                          f"\n动态链接：https://t.bilibili.com/{dynamic_id}")
 
         # bot发送消息给订阅者
         for user_id in sub_list:

@@ -12,8 +12,6 @@ assert scheduler is not None
 scheduler = scheduler.scheduler
 
 
-status = {}
-
 uid_list: list = []
 index = 0
 
