@@ -20,10 +20,15 @@ bot_help = on_command(
 
 @bot_help.handle()
 async def _(event: PrivateMessageEvent):
-    await bot_help.finish(f"这里是滑滑bot，目前已有的功能如下"
+    await bot_help.finish(f"你好，这里是滑滑bot，目前已有的功能如下"
                           f"\n（'help'可替换为'帮助‘）"
-                          f"\n树洞：/help 树洞"
-                          f"\nb站小帮手：/help bilibili，/help b站"
+                          f"\n——树洞——"
+                          f"\n功能：可以发一些自己的想法和看一些别人的想法"
+                          f"\n指令：/help 树洞"
+                          f"\n——b站小帮手——"
+                          f"\n功能：实时获取up主的直播和动态推送"
+                          f"\n指令：/help bilibili，/help b站"
+                          f"\n——其他——"
                           f"\nbot反馈：/反馈"
                           f"\n注：bot每天凌晨4点会重启，请注意使用时避开重启时间，以免数据丢失")
 
