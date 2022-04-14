@@ -1,6 +1,5 @@
-from loguru import logger
 from nonebot import on_command
-from nonebot.adapters.onebot.v11 import PrivateMessageEvent, Bot, FriendRequestEvent
+from nonebot.adapters.onebot.v11 import PrivateMessageEvent, GroupMessageEvent, Bot, FriendRequestEvent
 from nonebot.rule import to_me
 from nonebot.typing import T_State
 from nonebot import on_request
@@ -25,13 +24,26 @@ async def _(event: PrivateMessageEvent):
                           f"\n——树洞——"
                           f"\n功能：可以发一些自己的想法和看一些别人的想法"
                           f"\n指令：/help 树洞"
-                          f"\n——b站小帮手——"
-                          f"\n功能：实时获取up主的直播和动态推送"
-                          f"\n指令：/help bilibili，/help b站"
+                          # f"\n——b站小帮手——"
+                          # f"\n功能：实时获取up主的直播和动态推送"
+                          #f"\n指令：/help bilibili，/help b站"
                           f"\n——其他——"
                           f"\nbot反馈：/反馈"
                           f"\n注：bot每天凌晨4点会重启，请注意使用时避开重启时间，以免数据丢失")
 
+
+@bot_help.handle()
+async def _(event: GroupMessageEvent):
+    await bot_help.finish(f"这里是滑滑bot，目前已有的功能如下"
+                          # f"\n——俄罗斯转盘——"
+                          # f"\n指令：/rr"
+                          # f"\n功能：跟好友来一场刺激的对赌吧"
+                          f"\n——居合斩——"
+                          f"\n指令：/居合斩"
+                          f"\n功能：拔刀只在一念之间"
+                          f"\n——反馈——"
+                          f"\nbot反馈：/反馈"
+                          f"\n注：bot每天凌晨4点会重启，请注意使用时避开重启时间，以免数据丢失")
 
 feedback = on_command("反馈", rule=to_me(), priority=BOT_PRIORITY, block=True)
 
